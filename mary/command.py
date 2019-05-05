@@ -1,6 +1,6 @@
 import sys
 
-from .parser import _parse_cli_description
+from .parser import _parse_cli_description, _parse_command_help
 
 
 class Master:
@@ -54,10 +54,11 @@ class Command:
 
     def command_description(cls):
         """
-        Generate the Info message for the CLI app.
+        Generate the help message.
         """
+        arg = "name"  # TODO: get the argument dinamically
         if cls.__doc__:
-            return _parse_cli_description(cls.__doc__)
+            return _parse_command_help(cls.__doc__, arg, cls.help)
 
     def get_argument(self):
         try:
@@ -67,12 +68,9 @@ class Command:
 
     def handler(self):
         """
-        The handler for the CLI argument.
+        The handler of the command.
         """
         pass
-
-    def command_help(cls):
-        return cls.help
 
     def cli_doc(self):
         """
@@ -80,4 +78,3 @@ class Command:
         """
         if self.description:
             print(self.description)
-            print(self.command_help())
