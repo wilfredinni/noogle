@@ -22,7 +22,7 @@ class Command:
         Generate the help message.
         """
         if cls.__doc__:
-            help_msg = _parse_command_help(cls.__doc__, cls.argument)
+            help_msg = _parse_command_help(cls.__doc__, cls.argument, cls.command_name)
             print(help_msg)
 
     def get_argument(self):

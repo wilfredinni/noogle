@@ -11,23 +11,15 @@ def _parse_cli_description(doc, commands=None):
     return app_description
 
 
-def _parse_command_help(doc, command):
+def _parse_command_help(doc, command, command_name):
+    usage = f"{command_name} [options] [arguments]"
     app_doc = doc.strip()
 
-    # TODO fix the "name", must be the command name
-    usage = f"{command} [options] [arguments]"
-
     command_description = (
-        f"Help:\n"
-        f"  {app_doc}\n"
-        f"\nUsage:\n"
-        f"  {usage}\n"
-        f"\nArguments:"
-        # f"  {command} - {help}"
+        f"Help:\n" f"  {app_doc}\n" f"\nUsage:\n" f"  {usage}\n" f"\nArguments:"
     )
 
-    # for command in commands:
-    for c, h in command.items():
-        command_description += f"\n  {c} - {h}"
+    for com, description in command.items():
+        command_description += f"\n  {com} - {description}"
 
     return command_description
