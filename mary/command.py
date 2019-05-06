@@ -8,8 +8,8 @@ class Command:
     Base class for implementing commands
     """
 
-    help = None
     argument = None
+    command_name = None
 
     def __init__(self):
         self.argument = self.get_argument()
@@ -22,7 +22,7 @@ class Command:
         Generate the help message.
         """
         if cls.__doc__:
-            help_msg = _parse_command_help(cls.__doc__, cls.argument, cls.help)
+            help_msg = _parse_command_help(cls.__doc__, cls.argument)
             print(help_msg)
 
     def get_argument(self):

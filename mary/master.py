@@ -42,6 +42,3 @@ class Master:
             self.execute_command(self.command)
         else:
             self.main_help(self.commands)
-
-
-# test comment
