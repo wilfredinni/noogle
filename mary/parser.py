@@ -3,6 +3,11 @@ def _parse_cli_description(doc, commands=None):
     usage = "command [options] [arguments]"
     app_description = f"{app_doc}\n" f"\nUsage:" f"\n  {usage}"
 
+    if commands:
+        app_description += "\n\nCommands"
+        for command in commands:
+            app_description += f"\n  {command.__name__} - {command.help}"
+
     return app_description
 
 
