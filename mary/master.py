@@ -28,14 +28,14 @@ class Master:
         except IndexError:
             pass
 
+    def execute_command(self, command):
+        {com() for com in self.commands if com.__name__ == command}
+
     def register(self, commands: list):
         """
         Register all the commands.
         """
         [self.commands.append(command) for command in commands]
-
-    def execute_command(self, command):
-        {com() for com in self.commands if com.__name__ == command}
 
     def run(self):
         if self.command:
