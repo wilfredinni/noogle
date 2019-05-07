@@ -1,6 +1,7 @@
 import sys
 
-from .parser import _parse_command_help
+from ._messages import DescriptionMsg
+from ._parser import _parse_command_help
 
 
 class Command:
@@ -22,8 +23,12 @@ class Command:
         Generate the help message.
         """
         if cls.__doc__:
-            help_msg = _parse_command_help(cls.__doc__, cls.argument, cls.command_name)
-            print(help_msg)
+            description = cls.__doc__.strip()
+        else:
+            description = DescriptionMsg.no_description(cls.command_name)
+
+        help_msg = _parse_command_help(description, cls.argument, cls.command_name)
+        print(help_msg)
 
     def get_argument(self):
         try:

@@ -1,6 +1,7 @@
 import sys
 
-from .parser import _parse_cli_description
+from ._messages import ErrorMsg, DescriptionMsg
+from ._parser import _parse_cli_description
 
 
 class Master:
@@ -9,27 +10,32 @@ class Master:
     """
 
     def __init__(self):
-        self.command = self.get_command()
+        self.command = self._get_command()
         self.commands = []
 
-    def main_help(cls, commands):
+    def _main_help(cls, commands):
         """
         Generate the Info message for the CLI app.
         """
         if cls.__doc__:
-            help_msg = _parse_cli_description(cls.__doc__, commands)
-            print(help_msg)
+            description = cls.__doc__.strip()
+        else:
+            description = DescriptionMsg.no_description()
 
-        return "No description yet"
+        return _parse_cli_description(description, commands)
 
-    def get_command(self):
+    def _get_command(self):
         try:
             return sys.argv[1]
         except IndexError:
             pass
 
-    def execute_command(self, command):
-        {com() for com in self.commands if com.__name__ == command}
+    def _execute_command(self, command):
+        com = {com for com in self.commands if com.__name__ == command}
+        if com:
+            return list(com)[0]()
+
+        print(ErrorMsg.wrong_command(command))
 
     def register(self, commands: list):
         """
@@ -39,6 +45,6 @@ class Master:
 
     def run(self):
         if self.command:
-            self.execute_command(self.command)
+            self._execute_command(self.command)
         else:
-            self.main_help(self.commands)
+            print(self._main_help(self.commands))
