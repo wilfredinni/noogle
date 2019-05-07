@@ -24,6 +24,7 @@ class Greet(Command):
     def handler(self):
         print(f"Hello {self.argument}")
 
+
 app = Main()
 app.register([Greet])
 
