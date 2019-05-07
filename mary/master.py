@@ -11,7 +11,7 @@ class Master:
 
     def __init__(self):
         self.command = self._get_command()
-        self.commands = []
+        self.commands = {}
 
     def _main_help(cls, commands):
         """
@@ -31,9 +31,8 @@ class Master:
             pass
 
     def _execute_command(self, command):
-        com = {com for com in self.commands if com.__name__ == command}
-        if com:
-            return list(com)[0]()
+        if command in self.commands.keys():
+            return self.commands[command]()
 
         print(ErrorMsg.wrong_command(command))
 
@@ -41,7 +40,8 @@ class Master:
         """
         Register all the commands.
         """
-        [self.commands.append(command) for command in commands]
+        for command in commands:
+            self.commands[command.command_name] = command
 
     def run(self):
         if self.command:

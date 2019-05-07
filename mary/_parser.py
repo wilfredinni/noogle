@@ -7,13 +7,13 @@ def _parse_cli_description(description, commands=None):
 
     if commands:
         app_description += "\n\nCommands:"
-        for command in commands:
+        for name, command in commands.items():
             if command.__doc__:
                 command_help = command.__doc__.strip()
             else:
                 command_help = "No description yet"
 
-            app_description += f"\n  {command.command_name.ljust(15)} {command_help}"
+            app_description += f"\n  {name.ljust(15)} {command_help}"
 
     return app_description
 
