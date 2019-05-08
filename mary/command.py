@@ -24,7 +24,9 @@ class Command(Base):
         if description is None:
             description = DescriptionMsg.no_description(self.command_name)
 
-        help_msg = get_command_help(description, self.argument, self.command_name)
+        help_msg = get_command_help(
+            description, self.argument, self.command_name, self.options
+        )
         print(help_msg)
 
     def handler(self):

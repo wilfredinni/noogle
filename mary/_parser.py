@@ -1,4 +1,7 @@
 import sys
+from collections import namedtuple
+
+_options = namedtuple("options", ["name", "long_flag", "short_flag", "description"])
 
 
 class Parser:
@@ -29,3 +32,13 @@ class Parser:
     def get_argument(self):
         if len(self.arguments) > 0:
             return self.arguments[0]
+
+    def get_options(self, options):
+        for name, description in options.items():
+            name = name
+            long_flag = f"--{name}"
+            short_flag = f"-{name[0]}"
+            description = description
+            self.options.append(_options(name, long_flag, short_flag, description))
+
+        return self.options

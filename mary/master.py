@@ -2,6 +2,11 @@ from ._formatter import get_master_help
 from ._messages import DescriptionMsg, ErrorMsg
 from .base import Base
 
+_GLOBAL_OPTIONS = {
+    "version": "Display this application version",
+    "help": "Display this help message",
+}
+
 
 class Master(Base):
     """
@@ -9,12 +14,13 @@ class Master(Base):
     """
 
     version = "0.1.0"
+    options = _GLOBAL_OPTIONS
 
     def __init__(self):
         self._command = self.parse.get_command()
         self._commands = {}
 
-    def mod_main_help(self):
+    def _main_help(self):
         """
         Generate the Info message for the CLI app.
         """
@@ -22,7 +28,7 @@ class Master(Base):
         if description is None:
             description = DescriptionMsg.no_description()
 
-        return get_master_help(description, self._commands)
+        return get_master_help(description, self._commands, self.options)
 
     def _execute_command(self):
         if self._command in self._commands.keys():
@@ -46,4 +52,4 @@ class Master(Base):
         if self._command:
             return self._execute_command()
 
-        print(self.mod_main_help())
+        print(self._main_help())
