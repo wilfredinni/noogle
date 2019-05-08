@@ -1,5 +1,8 @@
 # Mary (tentative name)
 
+[![Build Status](https://travis-ci.org/wilfredinni/mary.svg?branch=master)](https://travis-ci.org/wilfredinni/mary) [![codecov](https://codecov.io/gh/wilfredinni/mary/branch/master/graph/badge.svg)](https://codecov.io/gh/wilfredinni/mary) [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/wilfredinni/mary/blob/master/LICENSE)
+
+
 Easily create beautiful and lightweight Command Line tools
 
 ```python
@@ -34,7 +37,7 @@ if __name__ == "__main__":
 
 Calling the script:
 
-```shell
+```
 $ python cli.py
 Sample CLI app for the Rose framework.
 
@@ -42,12 +45,12 @@ Usage:
   command [options] [arguments]
 
 Commands:
-  greet - Greets someone
+  greet           Greets someone
 ```
 
 Calling a command:
 
-```shell
+```
 $ python cli.py greet
 Help:
   Greets someone
@@ -56,12 +59,12 @@ Usage:
   greet [options] [arguments]
 
 Arguments:
-  name - Who do you want to greet?
+  name            Who do you want to greet?
 ```
 
 Calling the command and the argument:
 
-```shell
-$ python cli.py Greet Charles
+```
+$ python cli.py greet Charles
 Hello Charles
 ```

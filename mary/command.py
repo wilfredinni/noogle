@@ -1,7 +1,6 @@
-import sys
-
 from ._messages import DescriptionMsg
-from ._parser import _parse_command_help
+from ._formatter import get_command_help
+from ._parser import Parser
 
 
 class Command:
@@ -11,12 +10,16 @@ class Command:
 
     argument = None
     command_name = None
+    options = None
 
     def __init__(self):
-        self.argument = self.get_argument()
+        self.argv_argument = Parser.parse("argument")
 
-        if self.argument:
+        if self.argv_argument:
+            self.argument = self.argv_argument
             self.handler()
+        else:
+            self.command_help()
 
     def command_help(cls):
         """
@@ -27,14 +30,8 @@ class Command:
         else:
             description = DescriptionMsg.no_description(cls.command_name)
 
-        help_msg = _parse_command_help(description, cls.argument, cls.command_name)
+        help_msg = get_command_help(description, cls.argument, cls.command_name)
         print(help_msg)
-
-    def get_argument(self):
-        try:
-            return sys.argv[2]
-        except IndexError:
-            self.command_help()
 
     def handler(self):
         """

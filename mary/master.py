@@ -1,7 +1,6 @@
-import sys
-
 from ._messages import ErrorMsg, DescriptionMsg
-from ._parser import _parse_cli_description
+from ._formatter import get_master_help
+from ._parser import Parser
 
 
 class Master:
@@ -10,8 +9,8 @@ class Master:
     """
 
     def __init__(self):
-        self.command = self._get_command()
-        self.commands = {}
+        self._command = Parser.parse("command")
+        self._commands = {}
 
     def _main_help(cls, commands):
         """
@@ -22,17 +21,11 @@ class Master:
         else:
             description = DescriptionMsg.no_description()
 
-        return _parse_cli_description(description, commands)
-
-    def _get_command(self):
-        try:
-            return sys.argv[1]
-        except IndexError:
-            pass
+        return get_master_help(description, commands)
 
     def _execute_command(self, command):
-        if command in self.commands.keys():
-            return self.commands[command]()
+        if command in self._commands.keys():
+            return self._commands[command]()
 
         print(ErrorMsg.wrong_command(command))
 
@@ -41,10 +34,10 @@ class Master:
         Register all the commands.
         """
         for command in commands:
-            self.commands[command.command_name] = command
+            self._commands[command.command_name] = command
 
     def run(self):
-        if self.command:
-            self._execute_command(self.command)
+        if self._command:
+            self._execute_command(self._command)
         else:
-            print(self._main_help(self.commands))
+            print(self._main_help(self._commands))
