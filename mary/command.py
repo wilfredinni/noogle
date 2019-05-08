@@ -14,27 +14,32 @@ class Command:
 
     def __init__(self):
         self.argv_argument = Parser.parse("argument")
+        self._run()
 
-        if self.argv_argument:
-            self.argument = self.argv_argument
-            self.handler()
-        else:
-            self.command_help()
-
-    def command_help(cls):
+    def _command_help(self):
         """
         Generate the help message.
         """
-        if cls.__doc__:
-            description = cls.__doc__.strip()
-        else:
-            description = DescriptionMsg.no_description(cls.command_name)
+        description = self._get_doc()
+        if description is None:
+            description = DescriptionMsg.no_description(self.command_name)
 
-        help_msg = get_command_help(description, cls.argument, cls.command_name)
+        help_msg = get_command_help(description, self.argument, self.command_name)
         print(help_msg)
+
+    def _get_doc(cls):
+        if cls.__doc__:
+            return cls.__doc__.strip()
 
     def handler(self):
         """
         The handler of the command.
         """
         pass
+
+    def _run(self):
+        if self.argv_argument:
+            self.argument = self.argv_argument
+            return self.handler()
+
+        return self._command_help()

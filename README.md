@@ -29,7 +29,7 @@ class Greet(Command):
 
 
 app = Main()
-app.register([Greet])
+app.register(Greet)
 
 if __name__ == "__main__":
     app.run()
