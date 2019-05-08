@@ -8,21 +8,11 @@ class Master:
     Global CLI configuration.
     """
 
+    version = "0.1.0"
+
     def __init__(self):
         self._command = Parser.parse("command")
         self._commands = {}
-
-    @classmethod
-    def _main_help(cls, commands):
-        """
-        Generate the Info message for the CLI app.
-        """
-        if cls.__doc__:
-            description = cls.__doc__.strip()
-        else:
-            description = DescriptionMsg.no_description()
-
-        return get_master_help(description, commands)
 
     def mod_main_help(self):
         """
@@ -55,7 +45,7 @@ class Master:
 
     def run(self):
         """
-        Execute the Command Line Tool.
+        Execute the Command Line App.
         """
         if self._command:
             return self._execute_command()

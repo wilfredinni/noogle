@@ -35,7 +35,7 @@ class Command:
         """
         The handler of the command.
         """
-        pass
+        raise NotImplementedError()
 
     def _run(self):
         if self.argv_argument:
