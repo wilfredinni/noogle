@@ -1,19 +1,19 @@
-from ._messages import DescriptionMsg
 from ._formatter import get_command_help
-from ._parser import Parser
+from ._messages import DescriptionMsg
+from .base import Base
 
 
-class Command:
+class Command(Base):
     """
     Base class for implementing commands
     """
 
-    argument = None
-    command_name = None
-    options = None
+    command_name = None  # str: caller of the command
+    argument = None  # dict: {name: help} provided by the developer
+    options = None  # dict: {name: help}
 
     def __init__(self):
-        self.argv_argument = Parser.parse("argument")
+        self.argv_argument = self.parse.get_argument()  # Terminal argvs
         self._run()
 
     def _command_help(self):
@@ -26,10 +26,6 @@ class Command:
 
         help_msg = get_command_help(description, self.argument, self.command_name)
         print(help_msg)
-
-    def _get_doc(cls):
-        if cls.__doc__:
-            return cls.__doc__.strip()
 
     def handler(self):
         """

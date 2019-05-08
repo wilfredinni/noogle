@@ -1,9 +1,9 @@
-from ._messages import ErrorMsg, DescriptionMsg
 from ._formatter import get_master_help
-from ._parser import Parser
+from ._messages import DescriptionMsg, ErrorMsg
+from .base import Base
 
 
-class Master:
+class Master(Base):
     """
     Global CLI configuration.
     """
@@ -11,7 +11,7 @@ class Master:
     version = "0.1.0"
 
     def __init__(self):
-        self._command = Parser.parse("command")
+        self._command = self.parse.get_command()
         self._commands = {}
 
     def mod_main_help(self):
@@ -23,10 +23,6 @@ class Master:
             description = DescriptionMsg.no_description()
 
         return get_master_help(description, self._commands)
-
-    def _get_doc(cls):
-        if cls.__doc__:
-            return cls.__doc__.strip()
 
     def _execute_command(self):
         if self._command in self._commands.keys():

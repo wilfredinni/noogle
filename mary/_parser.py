@@ -2,18 +2,30 @@ import sys
 
 
 class Parser:
-    @staticmethod
-    def parse(expression):
-        argvs = sys.argv
+    def __init__(self):
+        self.argvs = sys.argv
 
-        if expression == "command":
-            try:
-                return argvs[1]
-            except IndexError:
-                pass
+        self.cli_name = None
+        self.commands = []
+        self.arguments = []
 
-        elif expression == "argument":
-            try:
-                return sys.argv[2]
-            except IndexError:
-                pass
+        # TODO: not implemented yet
+        self.options = []
+
+        # get the information
+        self.get_elements(self.argvs)
+
+    def get_elements(self, argvs):
+        if len(argvs) > 1:
+            self.commands.append(argvs[1])
+
+        if len(argvs) > 2:
+            self.arguments.append(argvs[2])
+
+    def get_command(self):
+        if len(self.commands) > 0:
+            return self.commands[0]
+
+    def get_argument(self):
+        if len(self.arguments) > 0:
+            return self.arguments[0]
