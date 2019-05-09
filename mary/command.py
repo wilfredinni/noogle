@@ -13,7 +13,11 @@ class Command(Base):
 
     def __init__(self):
         self.argv_argument = self.parse.get_argument()  # Terminal argvs
-        self.options = self.parse.get_options(self.options)
+        self.flags = self.parse.get_flags()
+
+        if self.options:
+            self.options = self.parse.parse_options(self.options)
+
         self._run()
 
     def _command_help(self):

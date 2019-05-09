@@ -1,36 +1,42 @@
 import sys
 from collections import namedtuple
 
+_argv = namedtuple("argvs", ["name", "commands", "flags", "arguments"])
 _options = namedtuple("options", ["name", "long_flag", "short_flag", "description"])
 
 
 class Parser:
     def __init__(self):
-        self.argvs = sys.argv
+        self.argv = sys.argv
+        self.parsed_argv = self.parse()
 
-        self.cli_name = None
-        self.commands = []
-        self.arguments = []
+    def parse(self):
+        name = self.argv[0]
+        commands = None
 
-        # get the information
-        self.get_elements(self.argvs)
+        if len(self.argv) > 1:
+            commands = self.argv[1]
 
-    def get_elements(self, argvs):
-        if len(argvs) > 1:
-            self.commands.append(argvs[1])
+        flags = [arg for arg in self.argv if arg.startswith("-")]
+        arguments = [arg for arg in self.argv[2:] if not arg.startswith("-")]
 
-        if len(argvs) > 2:
-            self.arguments.append(argvs[2])
+        print(_argv(name, commands, flags, arguments))
+
+        return _argv(name, commands, flags, arguments)
 
     def get_command(self):
-        if len(self.commands) > 0:
-            return self.commands[0]
+        return self.parsed_argv.commands
 
     def get_argument(self):
-        if len(self.arguments) > 0:
-            return self.arguments[0]
+        return self.parsed_argv.arguments
 
-    def get_options(self, options):
+    def get_flags(self):
+        return self.parsed_argv.flags
+
+    def get_app_name(self):
+        return self.parsed_argv.name
+
+    def parse_options(self, options):
         """
         Parse a dictionary containing Master or Command options.
 
