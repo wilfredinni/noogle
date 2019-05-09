@@ -1,21 +1,27 @@
 from ._messages import CliMsg
-from ._parser import Parser
 
-parser = Parser()
 ls = "  "  # left space for printing
 
 
-def get_master_help(description, commands, options=None):
+def get_master_help(description, commands, options=None, user_options=None):
     usage = CliMsg.usage()
     app_description = f"{description}\n\n"
     app_description += f"Usage:\n"
     app_description += f"{ls}{usage}"
 
     if options:
-        options = parser.get_options(options)
         app_description += "\n\nGlobal Options:\n"
 
         for option in options:
+            app_description += (
+                f"{ls}{option.short_flag}, "
+                f"{option.long_flag.ljust(13)}"
+                f"{option.description}\n"
+            )
+
+    if user_options:
+        app_description += "\nOptions:\n"
+        for option in user_options:
             app_description += (
                 f"{ls}{option.short_flag}, "
                 f"{option.long_flag.ljust(13)}"
@@ -30,7 +36,8 @@ def get_master_help(description, commands, options=None):
             else:
                 command_help = "No description yet"
 
-            app_description += f"\n{ls}{name.ljust(16)} {command_help}"
+            app_description += f"\n{ls}{name.ljust(16)}"
+            app_description += f"{command_help}"
 
     return app_description
 
@@ -43,7 +50,6 @@ def get_command_help(description, argument, command_name, options):
     command_description += f"\nUsage:\n  {usage}\n"
 
     if options:
-        options = parser.get_options(options)
         command_description += "\nOptions:\n"
 
         for option in options:

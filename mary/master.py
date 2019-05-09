@@ -1,4 +1,5 @@
 from ._formatter import get_master_help
+from ._io import output
 from ._messages import DescriptionMsg, ErrorMsg
 from .base import Base
 
@@ -9,32 +10,48 @@ _GLOBAL_OPTIONS = {
 
 
 class Master(Base):
-    """
-    Global CLI configuration.
-    """
+    """Global CLI configuration."""
 
+    cover = None  # TODO: print something nice
+
+    app_name = "Mary"
     version = "0.1.0"
-    options = _GLOBAL_OPTIONS
+    options = None  # custom user options
 
     def __init__(self):
         self._command = self.parse.get_command()
         self._commands = {}
 
+        self.parsed_options = self.parse.get_options(_GLOBAL_OPTIONS)
+        if self.options:  # custom user options for Master
+            self.options = self.parse.get_options(self.options)
+
     def _main_help(self):
-        """
-        Generate the Info message for the CLI app.
-        """
+        """Generate the Info message for the CLI app."""
         description = self._get_doc()
         if description is None:
             description = DescriptionMsg.no_description()
 
-        return get_master_help(description, self._commands, self.options)
+        return get_master_help(
+            description, self._commands, self.parsed_options, self.options
+        )
 
-    def _execute_command(self):
+    def _execute(self):
+        """Execute a Command or Flag (default or user defined)."""
         if self._command in self._commands.keys():
             return self._commands[self._command]()
 
-        print(ErrorMsg.wrong_command(self._command))
+        # TODO: fix his hardcoded crap
+        for option in self.parsed_options:
+            if option.short_flag == self._command or option.long_flag == self._command:
+                if option.short_flag == "-h" or option.short_flag == "--help":
+                    output(self._main_help())
+                    break
+                elif option.short_flag == "-v" or option.long_flag == "--version":
+                    output(f"{self.app_name} {self.version}")
+                    break
+        else:
+            output(ErrorMsg.wrong_command(self._command))
 
     def register(self, *args):
         """
@@ -46,10 +63,8 @@ class Master(Base):
         [self._commands.setdefault(command.command_name, command) for command in args]
 
     def run(self):
-        """
-        Execute the Command Line App.
-        """
+        """Execute the Command Line Interface."""
         if self._command:
-            return self._execute_command()
+            return self._execute()
 
-        print(self._main_help())
+        output(self._main_help())

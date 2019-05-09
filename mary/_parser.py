@@ -12,9 +12,6 @@ class Parser:
         self.commands = []
         self.arguments = []
 
-        # TODO: not implemented yet
-        self.options = []
-
         # get the information
         self.get_elements(self.argvs)
 
@@ -34,11 +31,21 @@ class Parser:
             return self.arguments[0]
 
     def get_options(self, options):
+        """
+        Parse a dictionary containing Master or Command options.
+
+        Arguments:
+            options Dict -- {"name": "description"}
+
+        Returns:
+            List -- List of namedtuple objects
+        """
+        parsed_options = []
         for name, description in options.items():
             name = name
             long_flag = f"--{name}"
             short_flag = f"-{name[0]}"
             description = description
-            self.options.append(_options(name, long_flag, short_flag, description))
+            parsed_options.append(_options(name, long_flag, short_flag, description))
 
-        return self.options
+        return parsed_options
