@@ -7,7 +7,7 @@ Easily create beautiful and lightweight Command Line tools
 
 ```python
 # cli.py
-from mary import Master, Command
+from noodle import Master, Command
 
 
 class Main(Master):

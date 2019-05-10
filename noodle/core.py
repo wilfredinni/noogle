@@ -124,12 +124,16 @@ class Command(Base):
         by the user) is override with the argument (sys.argv) to be used on
         the `handler()` method. Else, generate and print the help.
         """
+        # print(self.argv_argument)
+        # TODO use len to turn self.argument to None if self.argv_argument is
+        # an empty list. May be usefull letter on.
         if self.argv_argument:
             # `self.argv_argument` return a list of arguments. For now, to
             # retrieve the argument, is hardcoded to the first element of
             # the list. This wont work if the user need a a list of arguments.
             # Maybe a method on parse.get_argument (_parser.py).
             self.argument = self.argv_argument[0]
+            print(self.argument)
             return self.handler()
 
         return self._command_help()
