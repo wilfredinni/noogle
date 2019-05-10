@@ -1,9 +1,9 @@
 [tool.poetry]
-name = "mary"
-version = "0.1.0"
+name = "noodle"
+version = "0.0.1"
 description = "Create beautiful and lightweight Command Lines Tools."
 authors = ["wilfredinni <carlos.w.montecinos@gmail.com>"]
-repository = "https://github.com/wilfredinni/mary"
+repository = "https://github.com/wilfredinni/noodle"
 readme = "README.md"
 license = "MIT"
 keywords = ["cli", "commands"]

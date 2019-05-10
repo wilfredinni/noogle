@@ -1,4 +1,4 @@
-# Mary (tentative name)
+# Noodle
 
 [![Build Status](https://travis-ci.org/wilfredinni/mary.svg?branch=master)](https://travis-ci.org/wilfredinni/mary) [![codecov](https://codecov.io/gh/wilfredinni/mary/branch/master/graph/badge.svg)](https://codecov.io/gh/wilfredinni/mary) [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/wilfredinni/mary/blob/master/LICENSE)
 
@@ -12,7 +12,7 @@ from noodle import Master, Command
 
 class Main(Master):
     """
-    Sample CLI app for the Mary framework.
+    Sample CLI app written with Noodle.
     """
 
 

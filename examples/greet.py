@@ -1,7 +1,7 @@
 """
 Very basic example that show how to build the simples CLI.
 """
-from mary import Master, Command
+from noodle import Master, Command
 
 
 class Main(Master):

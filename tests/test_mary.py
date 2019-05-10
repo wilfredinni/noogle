@@ -1,4 +1,4 @@
-from mary import __version__
+from noodle import __version__
 
 
 def test_version():
