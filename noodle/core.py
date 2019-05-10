@@ -133,7 +133,7 @@ class Command(Base):
             # the list. This wont work if the user need a a list of arguments.
             # Maybe a method on parse.get_argument (_parser.py).
             self.argument = self.argv_argument[0]
-            print(self.argument)
+            # print(self.argument)
             return self.handler()
 
         return self._command_help()

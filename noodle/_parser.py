@@ -7,10 +7,9 @@ _options = namedtuple("options", ["name", "long_flag", "short_flag", "descriptio
 
 class Parser:
     def __init__(self):
-        self.argv = sys.argv
-        self.parsed_argv = self.parse()
+        self.parsed_argv = self.parse_arguments(sys.argv)
 
-    def parse(self):
+    def parse_arguments(self, argv):
         """
         Given an iterable of arguments, it returns a namedtuple class with the
         name of the of the script at `parsed_argv.name`, the commands at
@@ -19,14 +18,14 @@ class Parser:
 
         Missing items are filled with `None`.
         """
-        name = self.argv[0]
+        name = argv[0]
 
         commands = None
-        if len(self.argv) > 1:
-            commands = self.argv[1]
+        if len(argv) > 1:
+            commands = argv[1]
 
-        flags = [arg for arg in self.argv if arg.startswith("-")]
-        arguments = [arg for arg in self.argv[2:] if not arg.startswith("-")]
+        flags = [arg for arg in argv if arg.startswith("-")]
+        arguments = [arg for arg in argv[2:] if not arg.startswith("-")]
 
         # print(_argv(name, commands, flags, arguments))
         return _argv(name, commands, flags, arguments)
