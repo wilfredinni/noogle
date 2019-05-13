@@ -1,8 +1,7 @@
-from ._parser import Parser
-from ._formatter import get_master_help
+from ._formatter import get_command_help, get_master_help
 from ._io import output
-from ._messages import DescriptionMsg, ErrorMsg, CliMsg
-from ._formatter import get_command_help
+from ._messages import CliMsg, DescriptionMsg, ErrorMsg
+from ._parser import Parser
 
 # import pysnooper
 
@@ -33,19 +32,24 @@ class Master(Base):
     options = None  # custom user options
 
     def __init__(self):
+        self.app_name = self._app_name
         self._command = parse.get_command
         self._commands = {}
-
-        # flags
         self.flags = parse.get_flags
+        self.default_options = parse.parse_options(_GLOBAL_OPTIONS)
+        self.options = self._user_options
 
+    @property
+    def _app_name(self):
         if not self.app_name:
-            self.app_name = parse.get_app_name
+            return parse.get_app_name
 
-        # default and custom options
-        self.parsed_options = parse.parse_options(_GLOBAL_OPTIONS)
-        if self.options:  # custom user options for Master
-            self.options = parse.parse_options(self.options)
+        return self.app_name
+
+    @property
+    def _user_options(self):
+        if self.options:
+            return parse.parse_options(self.options)
 
     def _main_help(self):
         """Generate the Info message for the CLI app."""
@@ -54,7 +58,7 @@ class Master(Base):
             description = DescriptionMsg.no_description()
 
         return get_master_help(
-            description, self._commands, self.parsed_options, self.options
+            description, self._commands, self.default_options, self.options
         )
 
     def _execute_command(self):
@@ -78,8 +82,7 @@ class Master(Base):
             output(CliMsg.version(self.app_name, self.version))
 
         else:
-            # TODO: this shit is hardcoded. This shit will bring doom if
-            # I don't fix it.
+            # TODO: this shit is hardcoded and will bring doom if I don't fix it.
             output(ErrorMsg.wrong_command(self.flags[0]))
 
     def register(self, *args):
@@ -102,17 +105,19 @@ class Command(Base):
     """Base class for implementing Commands."""
 
     command_name = None  # str: caller of the command
-    argument = None  # dict: {name: help} provided by the users
+    argument = None  # dict: {name: help} provided by the user
     options = None  # dict: {name: help} provided by the user
 
     def __init__(self):
         self.argv_argument = parse.get_argument  # Terminal argvs
         self.flags = parse.get_flags
-
-        if self.options:
-            self.options = parse.parse_options(self.options)
-
+        self.options = self._command_options
         self._run()
+
+    @property
+    def _command_options(self):
+        if self.options:
+            return parse.parse_options(self.options)
 
     def _command_help(self):
         """Generate the help message."""
