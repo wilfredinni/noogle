@@ -22,6 +22,7 @@ flake8 = "^3.7"
 tox = "^3.9"
 coverage = "^4.5"
 pytest-cov = "^2.7"
+pysnooper = "^0.0.34"
 
 [build-system]
 requires = ["poetry>=0.12"]

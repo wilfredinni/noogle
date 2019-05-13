@@ -4,6 +4,8 @@ from ._io import output
 from ._messages import DescriptionMsg, ErrorMsg, CliMsg
 from ._formatter import get_command_help
 
+# import pysnooper
+
 
 _GLOBAL_OPTIONS = {
     "version": "Display this application version",
@@ -14,6 +16,8 @@ parse = Parser()
 
 
 class Base:
+    """Base class for both, Master and Command"""
+
     def _get_doc(cls):
         if cls.__doc__:
             return cls.__doc__.strip()
@@ -31,6 +35,9 @@ class Master(Base):
     def __init__(self):
         self._command = parse.get_command
         self._commands = {}
+
+        # flags
+        self.flags = parse.get_flags
 
         if not self.app_name:
             self.app_name = parse.get_app_name
@@ -50,39 +57,43 @@ class Master(Base):
             description, self._commands, self.parsed_options, self.options
         )
 
-    def _execute(self):
-        """Execute a Command or Flag (default or user defined)."""
+    def _execute_command(self):
+        """Execute a registered Command."""
         if self._command in self._commands.keys():
             return self._commands[self._command]()
 
+        output(ErrorMsg.wrong_command(self._command))
+
+    def _execute_flag(self):
+        """Execute a Flag (default or user defined)"""
         # TODO fix: undefined flag after a command prints help
         # HINT: this is because before the check for the flag the command is
-        # executed (first if statement in this method). To output the expected
+        # executed (`_execute_command`). To output the expected
         # error message, create a check for flags inside the Command class.
-        flags = parse.get_flags
-        # print(flags)
-        if "-h" in flags or "--help" in flags:
+
+        if "-h" in self.flags or "--help" in self.flags:
             output(self._main_help())
 
-        if "-v" in flags or "--version" in flags:
+        elif "-v" in self.flags or "--version" in self.flags:
             output(CliMsg.version(self.app_name, self.version))
 
         else:
-            output(ErrorMsg.wrong_command(self._command))
+            # TODO: this shit is hardcoded. This shit will bring doom if
+            # I don't fix it.
+            output(ErrorMsg.wrong_command(self.flags[0]))
 
     def register(self, *args):
-        """
-        Register all the commands.
-
-        Arguments:
-            *args {class} -- Classes that inherit from Command
-        """
+        """Register all the commands."""
         [self._commands.setdefault(command.command_name, command) for command in args]
 
     def run(self):
         """Execute the Command Line Interface."""
         if self._command:
-            return self._execute()
+            return self._execute_command()
+
+        # provided_flags = parse.get_flags:
+        elif self.flags:
+            return self._execute_flag()
 
         output(self._main_help())
 

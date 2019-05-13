@@ -6,8 +6,12 @@ _options = namedtuple("options", ["name", "long_flag", "short_flag", "descriptio
 
 
 class Parser:
-    def __init__(self):
-        self.parsed_argv = self.parse_arguments(sys.argv)
+    def __init__(self, test=False, test_argv=None):
+        # TODO need to explain what I did here before I forget
+        if test is False:
+            self.parsed_argv = self.parse_arguments(sys.argv)
+        else:
+            self.parsed_argv = self.parse_arguments(test_argv)
 
     def parse_arguments(self, argv):
         """
@@ -21,13 +25,12 @@ class Parser:
         name = argv[0]
 
         commands = None
-        if len(argv) > 1:
+        if len(argv) > 1 and not argv[1].startswith("-"):
             commands = argv[1]
 
         flags = [arg for arg in argv if arg.startswith("-")]
         arguments = [arg for arg in argv[2:] if not arg.startswith("-")]
 
-        # print(_argv(name, commands, flags, arguments))
         return _argv(name, commands, flags, arguments)
 
     @property
@@ -46,7 +49,8 @@ class Parser:
     def get_app_name(self):
         return self.parsed_argv.name
 
-    def parse_options(self, options):
+    @staticmethod
+    def parse_options(options):
         """
         Given an iterable of arguments that represents the default and user
         declared options, it returns a namedtuple class with the name of the

@@ -5,6 +5,7 @@ omit =
     tests/*
     examples/*
     .tox/*
+    test.py
 [report]
 exclude_lines =
     def __repr__
