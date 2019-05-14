@@ -1,7 +1,7 @@
 from ._formatter import get_command_help, get_master_help
-from ._io import output
 from ._messages import CliMsg, DescriptionMsg, ErrorMsg
 from ._parser import Parser
+from .io import output
 
 # import pysnooper
 
