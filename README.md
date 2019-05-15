@@ -7,16 +7,16 @@ Easily create beautiful and lightweight Command Line tools
 
 ```python
 # cli.py
-from noodle import Master, Command
+import noodle
 
 
-class Main(Master):
+class Main(noodle.Master):
     """
     Sample CLI app written with Noodle.
     """
 
 
-class Greet(Command):
+class Greet(noodle.Command):
     """
     Greets someone
     """
@@ -25,7 +25,7 @@ class Greet(Command):
     argument = {"name": "Who do you want to greet?"}
 
     def handler(self):
-        print(f"Hello {self.argument}")
+        noodle.output(f"Hello {self.argument}")
 
 
 app = Main()
@@ -39,7 +39,7 @@ Calling the script:
 
 ```
 $ python cli.py
-Sample CLI app for the Rose framework.
+Sample CLI app written with Noodle.
 
 Usage:
   command [options] [arguments]

@@ -7,11 +7,16 @@ _options = namedtuple("options", ["name", "long_flag", "short_flag", "descriptio
 
 class Parser:
     def __init__(self, test=False, test_argv=None):
-        # TODO need to explain what I did here before I forget
-        if test is False:
-            self.parsed_argv = self.parse_arguments(sys.argv)
-        else:
-            self.parsed_argv = self.parse_arguments(test_argv)
+        self.test = test
+        self.test_argv = test_argv
+        self.parsed_argv = self._arguments
+
+    @property
+    def _arguments(self):
+        if self.test:
+            return self.parse_arguments(self.test_argv)
+
+        return self.parse_arguments(sys.argv)
 
     def parse_arguments(self, argv):
         """

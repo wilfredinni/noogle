@@ -4,7 +4,8 @@ ls = "  "  # left space for printing
 
 
 def get_master_help(description, commands, options=None, user_options=None):
-    """Returns nicely formatted string with the definition, usage,
+    """
+    Returns a nicely formatted string with the definition, usage,
     commands and options of a CLI.
     """
     usage = CliMsg.usage()
@@ -25,8 +26,10 @@ def get_master_help(description, commands, options=None, user_options=None):
 
 
 def get_command_help(description, argument, command_name, options):
-    """Returns nicely formatted string with the definition, command
-    description and options of a single command."""
+    """
+    Returns a nicely formatted string with the definition, command
+    description and options of a single command.
+    """
     usage = CliMsg.usage(command_name)
 
     command_description = f"Help:\n"
@@ -43,7 +46,8 @@ def get_command_help(description, argument, command_name, options):
 
 
 def formatted_options(title, options):
-    """Returns a multiline string with nice formating for the default
+    """
+    Returns a multiline string with nice formating for the default
     and user defined options. Part of the Master and Command help.
     """
     fmt_options = f"\n{title}:\n"
@@ -58,7 +62,8 @@ def formatted_options(title, options):
 
 
 def formatted_commands(commands):
-    """Returns a multiline string with nice formating for all the
+    """
+    Returns a multiline string with nice formating for all the
     registered commands.
     """
     fmt_commands = "\nCommands:"
@@ -75,7 +80,8 @@ def formatted_commands(commands):
 
 
 def formatted_arguments(argument):
-    """Returns a multiline string with nice formating for all the
+    """
+    Returns a multiline string with nice formating for all the
     arguments.
     """
     fmt_arguments = f"\nArguments:"

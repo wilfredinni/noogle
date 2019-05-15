@@ -1,3 +1,5 @@
+import sys
+
 from ._formatter import get_command_help, get_master_help
 from ._messages import CliMsg, DescriptionMsg, ErrorMsg
 from ._parser import Parser
@@ -15,44 +17,41 @@ parse = Parser()
 
 
 class Base:
-    """Base class for both, Master and Command"""
+    """
+    Base class for both, Master and Command
+    """
 
-    def _get_doc(cls):
-        if cls.__doc__:
-            return cls.__doc__.strip()
+    def _get_doc(self):
+        if self.__doc__:
+            return self.__doc__.strip()
 
 
 class Master(Base):
-    """Global CLI configuration."""
+    """
+    Global CLI configuration.
+    """
 
     cover = None  # TODO: print something nice
-
     app_name = None
+    options = None
     version = "0.1.0"
-    options = None  # custom user options
 
     def __init__(self):
-        self.app_name = self._app_name
-        self._command = parse.get_command
         self._commands = {}
         self.flags = parse.get_flags
+        self.current_command = parse.get_command
         self.default_options = parse.parse_options(_GLOBAL_OPTIONS)
-        self.options = self._user_options
 
-    @property
-    def _app_name(self):
-        if not self.app_name:
-            return parse.get_app_name
-
-        return self.app_name
-
-    @property
-    def _user_options(self):
         if self.options:
-            return parse.parse_options(self.options)
+            self.options = parse.parse_options(self.options)
+
+        if not self.app_name:
+            self.app_name = parse.get_app_name
 
     def _main_help(self):
-        """Generate the Info message for the CLI app."""
+        """
+        Generate the Info message for the CLI app.
+        """
         description = self._get_doc()
         if description is None:
             description = DescriptionMsg.no_description()
@@ -62,14 +61,18 @@ class Master(Base):
         )
 
     def _execute_command(self):
-        """Execute a registered Command."""
-        if self._command in self._commands.keys():
-            return self._commands[self._command]()
+        """
+        Execute a registered Command.
+        """
+        if self.current_command in self._commands.keys():
+            return self._commands[self.current_command]()
 
-        output(ErrorMsg.wrong_command(self._command))
+        output(ErrorMsg.wrong_command(self.current_command))
 
     def _execute_flag(self):
-        """Execute a Flag (default or user defined)"""
+        """
+        Execute a Flag (default or user defined)
+        """
         # TODO fix: undefined flag after a command prints help
         # HINT: this is because before the check for the flag the command is
         # executed (`_execute_command`). To output the expected
@@ -86,15 +89,18 @@ class Master(Base):
             output(ErrorMsg.wrong_command(self.flags[0]))
 
     def register(self, *args):
-        """Register all the commands."""
+        """
+        Register a command.
+        """
         [self._commands.setdefault(command.command_name, command) for command in args]
 
     def run(self):
-        """Execute the Command Line Interface."""
-        if self._command:
+        """
+        Execute the Command Line Interface.
+        """
+        if self.current_command:
             return self._execute_command()
 
-        # provided_flags = parse.get_flags:
         elif self.flags:
             return self._execute_flag()
 
@@ -102,14 +108,16 @@ class Master(Base):
 
 
 class Command(Base):
-    """Base class for implementing Commands."""
+    """
+    Base class for implementing Commands.
+    """
 
     command_name = None  # str: caller of the command
     argument = None  # dict: {name: help} provided by the user
     options = None  # dict: {name: help} provided by the user
 
     def __init__(self):
-        self.argv_argument = parse.get_argument  # Terminal argvs
+        self.passed_arguments = parse.get_argument  # Terminal argvs
         self.flags = parse.get_flags
         self.options = self._command_options
         self._run()
@@ -120,7 +128,9 @@ class Command(Base):
             return parse.parse_options(self.options)
 
     def _command_help(self):
-        """Generate the help message."""
+        """
+        Generate the help message.
+        """
         description = self._get_doc()
         if description is None:
             description = DescriptionMsg.no_description(self.command_name)
@@ -131,8 +141,35 @@ class Command(Base):
         output(help_msg)
 
     def handler(self):
-        """The handler of the command."""
+        """
+        The handler of the command.
+        """
         raise NotImplementedError()
+
+    def option(self, option):
+        """
+        Return True/False if the option valid.
+        """
+        self.check_option(option)
+        # user defined options are in self.options
+        # current flag is in self.flags
+        # option can be:
+        # - short, -y (self.options[0].short_flag)
+        # - long --yell (self.options[0].long_flag)
+        for opt in self.options:
+            if opt.name == option:
+                if opt.short_flag in self.flags or opt.long_flag in self.flags:
+                    return True
+
+        return False
+
+    def check_option(self, option):
+        for opt in self.options:
+            if opt.short_flag in self.flags or opt.long_flag in self.flags:
+                return
+
+        output(ErrorMsg.wrong_option(self.flags))
+        sys.exit()
 
     def _run(self):
         """
@@ -140,16 +177,14 @@ class Command(Base):
         by the user) is override with the argument (sys.argv) to be used on
         the `handler()` method. Else, generate and print the help.
         """
-        # print(self.argv_argument)
-        # TODO use len to turn self.argument to None if self.argv_argument is
+        # TODO use len to turn self.argument to None if self.passed_arguments is
         # an empty list. May be usefull letter on.
-        if self.argv_argument:
-            # `self.argv_argument` return a list of arguments. For now, to
+        if self.passed_arguments:
+            # `self.passed_arguments` return a list of arguments. For now, to
             # retrieve the argument, is hardcoded to the first element of
             # the list. This wont work if the user need a a list of arguments.
             # Maybe a method on parse.get_argument (_parser.py).
-            self.argument = self.argv_argument[0]
-            # print(self.argument)
+            self.argument = self.passed_arguments[0]
             return self.handler()
 
         return self._command_help()

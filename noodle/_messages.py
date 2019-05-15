@@ -6,6 +6,10 @@ class ErrorMsg:
 
         return f"CommandNotFound: '{argument}' is not registered."
 
+    @staticmethod
+    def wrong_option(flag):
+        return f"OptionNotFound: {flag} is not a valid option."
+
 
 class CliMsg:
     @staticmethod
