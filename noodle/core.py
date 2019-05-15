@@ -13,6 +13,8 @@ _GLOBAL_OPTIONS = {
     "help": "Display this help message",
 }
 
+_GLOBAL_COMMAND_OPTIONS = {"help": "Display this help message"}
+
 parse = Parser()
 
 
@@ -113,8 +115,10 @@ class Command(Base):
 
     def __init__(self):
         self.passed_arguments = parse.get_argument  # Terminal argvs
-        self.flags = parse.get_flags
         self.options = self._command_options
+        self.flags = parse.get_flags
+        self.default_command_options = parse.parse_options(_GLOBAL_COMMAND_OPTIONS)
+
         self._run()
 
     @property
@@ -131,7 +135,11 @@ class Command(Base):
             description = DescriptionMsg.no_description(self.command_name)
 
         help_msg = get_command_help(
-            description, self.argument, self.command_name, self.options
+            description,
+            self.argument,
+            self.command_name,
+            self.default_command_options,
+            self.options,
         )
         output(help_msg)
 
@@ -145,7 +153,6 @@ class Command(Base):
         """
         Return True/False if the option valid.
         """
-        # self.check_option(option)
         # user defined options are in self.options
         # current flag is in self.flags
         # option can be:
@@ -158,12 +165,17 @@ class Command(Base):
 
         return False
 
-    def check_option(self):
-        for opt in self.options:
-            if opt.short_flag in self.flags or opt.long_flag in self.flags:
-                return
+    def check_options(self):
+        if "-h" in self.flags or "--help" in self.flags:
+            self._command_help()
+            sys.exit()
 
-        output(ErrorMsg.wrong_option(self.flags))
+        if self.options:
+            for opt in self.options:
+                if opt.short_flag in self.flags or opt.long_flag in self.flags:
+                    return
+
+        output(ErrorMsg.wrong_option(self.flags[0]))
         sys.exit()
 
     def _run(self):
@@ -172,23 +184,27 @@ class Command(Base):
         by the user) is override with the argument (sys.argv) to be used on
         the `handler()` method. Else, generate and print the help.
         """
-        # if an undefined flag is passed but no arguments
+        # if a flag is passed but no arguments
         if self.flags and not self.passed_arguments:
-            self.check_option()
+            self.check_options()
 
-        # if a wrong flag is passed with an argument
-        if self.flags and self.passed_arguments:
-            self.check_option()
+        # if a flag is passed with an argument
+        elif self.flags and self.passed_arguments:
+            self.check_options()
 
-        # if there are user arguments defined, and a flag but arguments passed
+        # if there are user arguments, and a flag but no user arguments
         if self.argument and self.flags and not self.passed_arguments:
             argument_name = [k for k in self.argument.keys()]
             output(ErrorMsg.no_argument(argument_name[0]))
             sys.exit()
 
+        # if there are no passed flags, no passed arguments no user definned arguments
+        if not self.flags and not self.passed_arguments and not self.argument:
+            return self.handler()
+
         if self.passed_arguments:
             # `self.passed_arguments` return a list of arguments. For now, to
-            # retrieve the argument, is hardcoded to the first element of
+            # retrieve the argument, I hardcoded to the first element of
             # the list. This wont work if the user need a a list of arguments.
             # Maybe a method on parse.get_argument (_parser.py).
             self.argument = self.passed_arguments[0]

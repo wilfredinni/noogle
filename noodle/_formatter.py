@@ -2,6 +2,8 @@ from ._messages import CliMsg, DescriptionMsg
 
 ls = "  "  # left space for printing
 
+# TODO the description (self.__doc__) needs a nice formatting
+
 
 def get_master_help(description, commands, options=None, user_options=None):
     """
@@ -14,10 +16,10 @@ def get_master_help(description, commands, options=None, user_options=None):
     app_description += f"{ls}{usage}"
 
     if options:
-        app_description += formatted_options("\nGlobal Options", options)
+        app_description += formatted_options(options, "\nOptions")
 
     if user_options:
-        app_description += formatted_options("Options", user_options)
+        app_description += formatted_options(user_options)
 
     if len(commands) > 0:
         app_description += formatted_commands(commands)
@@ -25,19 +27,21 @@ def get_master_help(description, commands, options=None, user_options=None):
     return app_description
 
 
-def get_command_help(description, argument, command_name, options):
+def get_command_help(description, argument, command_name, options, user_options):
     """
     Returns a nicely formatted string with the definition, command
     description and options of a single command.
     """
     usage = CliMsg.usage(command_name)
 
-    command_description = f"Help:\n"
-    command_description += f"{ls}{description}\n"
+    # command_description = f"Help:\n"
+    # command_description += f"{ls}{description}\n"
+    command_description = f"{description}\n"
     command_description += f"\nUsage:\n  {usage}\n"
 
-    if options:
-        command_description += formatted_options("Options", options)
+    command_description += formatted_options(options, "Options")
+    if user_options:
+        command_description += formatted_options(user_options)
 
     if argument:
         command_description += formatted_arguments(argument)
@@ -45,12 +49,15 @@ def get_command_help(description, argument, command_name, options):
     return command_description
 
 
-def formatted_options(title, options):
+def formatted_options(options, title=None):
     """
     Returns a multiline string with nice formating for the default
     and user defined options. Part of the Master and Command help.
     """
-    fmt_options = f"\n{title}:\n"
+    fmt_options = ""
+    if title:
+        fmt_options = f"\n{title}:\n"
+
     for option in options:
         fmt_options += (
             f"{ls}{option.short_flag}, "

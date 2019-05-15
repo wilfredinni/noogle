@@ -8,7 +8,7 @@ class ErrorMsg:
 
     @staticmethod
     def wrong_option(flag):
-        return f"OptionNotFound: {flag} is not a valid option."
+        return f"OptionNotFound: '{flag}' is not a valid option."
 
     @staticmethod
     def no_argument(argument):
