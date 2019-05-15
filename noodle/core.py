@@ -31,7 +31,7 @@ class Master(Base):
     Global CLI configuration.
     """
 
-    cover = None  # TODO: print something nice
+    cover = None  # TODO: print something nice cover
     app_name = None
     options = None
     version = "0.1.0"
@@ -73,11 +73,6 @@ class Master(Base):
         """
         Execute a Flag (default or user defined)
         """
-        # TODO fix: undefined flag after a command prints help
-        # HINT: this is because before the check for the flag the command is
-        # executed (`_execute_command`). To output the expected
-        # error message, create a check for flags inside the Command class.
-
         if "-h" in self.flags or "--help" in self.flags:
             output(self._main_help())
 
@@ -150,7 +145,7 @@ class Command(Base):
         """
         Return True/False if the option valid.
         """
-        self.check_option(option)
+        # self.check_option(option)
         # user defined options are in self.options
         # current flag is in self.flags
         # option can be:
@@ -163,7 +158,7 @@ class Command(Base):
 
         return False
 
-    def check_option(self, option):
+    def check_option(self):
         for opt in self.options:
             if opt.short_flag in self.flags or opt.long_flag in self.flags:
                 return
@@ -177,8 +172,20 @@ class Command(Base):
         by the user) is override with the argument (sys.argv) to be used on
         the `handler()` method. Else, generate and print the help.
         """
-        # TODO use len to turn self.argument to None if self.passed_arguments is
-        # an empty list. May be usefull letter on.
+        # if an undefined flag is passed but no arguments
+        if self.flags and not self.passed_arguments:
+            self.check_option()
+
+        # if a wrong flag is passed with an argument
+        if self.flags and self.passed_arguments:
+            self.check_option()
+
+        # if there are user arguments defined, and a flag but arguments passed
+        if self.argument and self.flags and not self.passed_arguments:
+            argument_name = [k for k in self.argument.keys()]
+            output(ErrorMsg.no_argument(argument_name[0]))
+            sys.exit()
+
         if self.passed_arguments:
             # `self.passed_arguments` return a list of arguments. For now, to
             # retrieve the argument, is hardcoded to the first element of

@@ -10,6 +10,10 @@ class ErrorMsg:
     def wrong_option(flag):
         return f"OptionNotFound: {flag} is not a valid option."
 
+    @staticmethod
+    def no_argument(argument):
+        return f"ArgumentNeeded: '{argument}' is a mandatory argument for this command."
+
 
 class CliMsg:
     @staticmethod
