@@ -19,15 +19,22 @@ def test_formatted_options():
     # random test
     options_1 = {"test": "test help"}
     parsed_options = parser.parse_options(options_1)
-    fmt_opt = formatted_options("Options", parsed_options)
+    fmt_opt = formatted_options(parsed_options, "Options")
     lines = fmt_opt.splitlines()
     assert lines[0] == ""
     assert lines[1] == "Options:"
     assert lines[2] == "  -t, --test       test help"
 
+    # random test without title
+    options_1 = {"test": "test help"}
+    parsed_options = parser.parse_options(options_1)
+    fmt_opt = formatted_options(parsed_options)
+    lines = fmt_opt.splitlines()
+    assert lines[0] == "  -t, --test       test help"
+
     # global options
     parsed_options = parser.parse_options(_GLOBAL_OPTIONS)
-    fmt_opt = formatted_options("Global Options", parsed_options)
+    fmt_opt = formatted_options(parsed_options, "Global Options")
     lines = fmt_opt.splitlines()
     assert lines[0] == ""
     assert lines[1] == "Global Options:"

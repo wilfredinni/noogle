@@ -3,4 +3,4 @@
 from .core import Master, Command
 from .io import output
 
-__version__ = "0.0.1"
+__version__ = "0.0.2"
