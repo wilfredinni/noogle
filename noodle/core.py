@@ -83,7 +83,7 @@ class Master(Base):
 
         else:
             # TODO: this shit is hardcoded and will bring doom if I don't fix it.
-            output(ErrorMsg.wrong_command(self.flags[0]))
+            output(ErrorMsg.wrong_option(self.flags[0]))
 
     def register(self, *args):
         """

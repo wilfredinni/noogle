@@ -4,14 +4,22 @@ from noodle._messages import ErrorMsg, CliMsg, DescriptionMsg
 
 
 @pytest.mark.parametrize(
-    "command, output",
-    [
-        ("-test", f"FlagNotFound: '-test' is not registered."),
-        ("test", "CommandNotFound: 'test' is not registered."),
-    ],
+    "command, output", [("test", "CommandNotFound: 'test' is not registered.")]
 )
 def test_wrong_command(command, output):
     msg = ErrorMsg.wrong_command(command)
+    assert msg == output
+
+
+@pytest.mark.parametrize(
+    "option, output",
+    [
+        ("--test", "OptionNotFound: '--test' is not a valid option."),
+        ("-t", "OptionNotFound: '-t' is not a valid option."),
+    ],
+)
+def test_wrong_option(option, output):
+    msg = ErrorMsg.wrong_option(option)
     assert msg == output
 
 

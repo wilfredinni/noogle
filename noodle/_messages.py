@@ -1,9 +1,6 @@
 class ErrorMsg:
     @staticmethod
     def wrong_command(argument):
-        if argument.startswith("-"):
-            return f"FlagNotFound: '{argument}' is not registered."
-
         return f"CommandNotFound: '{argument}' is not registered."
 
     @staticmethod
