@@ -1,15 +1,19 @@
 class ErrorMsg:
     @staticmethod
-    def wrong_command(argument):
-        return f"CommandNotFound: '{argument}' is not registered."
+    def wrong_command(command):
+        return f"CommandNotFound: '{command}' is not registered."
 
     @staticmethod
-    def wrong_option(flag):
-        return f"OptionNotFound: '{flag}' is not a valid option."
+    def wrong_option(option):
+        return f"OptionNotFound: '{option}' is not a valid option."
 
     @staticmethod
     def no_argument(argument):
         return f"ArgumentNeeded: '{argument}' is a mandatory argument for this command."
+
+    @staticmethod
+    def too_many_arguments(command):
+        return f"TooManyArguments: [{command} -h] for more information."
 
 
 class CliMsg:

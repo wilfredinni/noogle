@@ -12,56 +12,56 @@ def test_parse_arguments():
     parsed_args = parsed_arguments(["test.py"])
     assert parsed_args.name == "test.py"
     assert parsed_args.commands is None
-    assert parsed_args.flags == []
+    assert parsed_args.options == []
     assert parsed_args.arguments == []
 
     # CLI and command
     parsed_args = parsed_arguments(["test.py", "greet"])
     assert parsed_args.name == "test.py"
     assert parsed_args.commands == "greet"
-    assert parsed_args.flags == []
+    assert parsed_args.options == []
     assert parsed_args.arguments == []
 
     # CLI, command and argument
     parsed_args = parsed_arguments(["test.py", "greet", "carlos"])
     assert parsed_args.name == "test.py"
     assert parsed_args.commands == "greet"
-    assert parsed_args.flags == []
+    assert parsed_args.options == []
     assert parsed_args.arguments == ["carlos"]
 
     # CLI, and a flag
     parsed_args = parsed_arguments(["test.py", "-v"])
     assert parsed_args.name == "test.py"
     assert parsed_args.commands is None
-    assert parsed_args.flags == ["-v"]
+    assert parsed_args.options == ["-v"]
     assert parsed_args.arguments == []
 
     # CLI, and a flag
     parsed_args = parsed_arguments(["test.py", "--version"])
     assert parsed_args.name == "test.py"
     assert parsed_args.commands is None
-    assert parsed_args.flags == ["--version"]
+    assert parsed_args.options == ["--version"]
     assert parsed_args.arguments == []
 
     # CLI, and flags
     parsed_args = parsed_arguments(["test.py", "-v", "--version"])
     assert parsed_args.name == "test.py"
     assert parsed_args.commands is None
-    assert parsed_args.flags == ["-v", "--version"]
+    assert parsed_args.options == ["-v", "--version"]
     assert parsed_args.arguments == []
 
     # CLI, command and flag
     parsed_args = parsed_arguments(["test.py", "greet", "-v"])
     assert parsed_args.name == "test.py"
     assert parsed_args.commands == "greet"
-    assert parsed_args.flags == ["-v"]
+    assert parsed_args.options == ["-v"]
     assert parsed_args.arguments == []
 
     # CLI, command, flag and argument
     parsed_args = parsed_arguments(["test.py", "greet", "-y", "carlos"])
     assert parsed_args.name == "test.py"
     assert parsed_args.commands == "greet"
-    assert parsed_args.flags == ["-y"]
+    assert parsed_args.options == ["-y"]
     assert parsed_args.arguments == ["carlos"]
 
 
@@ -82,29 +82,29 @@ def test_get_argument():
     assert command == ["carlos"]
 
 
-def test_get_flags():
+def test_get_options():
     parser = get_setup(["test.py", "-v"])
-    command = parser.get_flags
+    command = parser.get_options
     assert command == ["-v"]
 
     parser = get_setup(["test.py", "--version"])
-    command = parser.get_flags
+    command = parser.get_options
     assert command == ["--version"]
 
     parser = get_setup(["test.py", "--version", "-v"])
-    command = parser.get_flags
+    command = parser.get_options
     assert command == ["--version", "-v"]
 
     parser = get_setup(["test.py", "greet", "-y"])
-    command = parser.get_flags
+    command = parser.get_options
     assert command == ["-y"]
 
     parser = get_setup(["test.py", "greet", "--yell"])
-    command = parser.get_flags
+    command = parser.get_options
     assert command == ["--yell"]
 
     parser = get_setup(["test.py", "greet", "-s", "--yell"])
-    command = parser.get_flags
+    command = parser.get_options
     assert command == ["-s", "--yell"]
 
 

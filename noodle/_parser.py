@@ -1,7 +1,7 @@
 import sys
 from collections import namedtuple
 
-_argv = namedtuple("argvs", ["name", "commands", "flags", "arguments"])
+_argv = namedtuple("argvs", ["name", "commands", "options", "arguments"])
 _options = namedtuple("options", ["name", "long_flag", "short_flag", "description"])
 
 
@@ -22,10 +22,10 @@ class Parser:
         """
         Given an iterable of arguments, it returns a namedtuple class with the
         name of the of the script at `parsed_argv.name`, the commands at
-        `parsed_argv.commands`, the flags at `parsed_argv.flags` and the rest of
+        `parsed_argv.commands`, the options at `parsed_argv.options` and the rest of
         the arguments at `parsed_argv.arguments`.
 
-        Missing items are filled with `None`.
+        Missing items are filled with `None` or empty lists.
         """
         name = argv[0]
 
@@ -33,10 +33,10 @@ class Parser:
         if len(argv) > 1 and not argv[1].startswith("-"):
             commands = argv[1]
 
-        flags = [arg for arg in argv if arg.startswith("-")]
+        options = [arg for arg in argv if arg.startswith("-")]
         arguments = [arg for arg in argv[2:] if not arg.startswith("-")]
 
-        return _argv(name, commands, flags, arguments)
+        return _argv(name, commands, options, arguments)
 
     @property
     def get_command(self):
@@ -47,8 +47,8 @@ class Parser:
         return self.parsed_argv.arguments
 
     @property
-    def get_flags(self):
-        return self.parsed_argv.flags
+    def get_options(self):
+        return self.parsed_argv.options
 
     @property
     def get_app_name(self):
@@ -58,17 +58,22 @@ class Parser:
     def parse_options(options):
         """
         Given an iterable of arguments that represents the default and user
-        declared options, it returns a namedtuple class with the name of the
-        command at `parsed_options.name`, the full flag at `parsed_options.long_flag`,
-        the short flags at `parsed_options.short_flag` and the description at
+        defined options, it returns a namedtuple class with the name of the
+        option at `parsed_options.name`, the full option at `parsed_options.long_flag`,
+        the short option at `parsed_options.short_flag` and the description at
         `parsed_options.description`.
         """
-        parsed_options = []
-        for name, description in options.items():
-            name = name
-            long_flag = f"--{name}"
-            short_flag = f"-{name[0]}"
-            description = description
-            parsed_options.append(_options(name, long_flag, short_flag, description))
+        if options:
+            parsed_options = []
+            for name, description in options.items():
+                name = name
+                long_flag = f"--{name}"
+                short_flag = f"-{name[0]}"
+                description = description
+                parsed_options.append(
+                    _options(name, long_flag, short_flag, description)
+                )
 
-        return parsed_options
+            return parsed_options
+
+        return

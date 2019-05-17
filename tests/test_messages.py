@@ -23,6 +23,11 @@ def test_wrong_option(option, output):
     assert msg == output
 
 
+def test_no_argument():
+    msg = ErrorMsg.no_argument("test")
+    assert msg == "ArgumentNeeded: 'test' is a mandatory argument for this command."
+
+
 def test_usage():
     assert CliMsg.usage() == "command [options] [arguments]"
     assert CliMsg.usage("test") == "test [options] [arguments]"

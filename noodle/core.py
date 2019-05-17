@@ -5,15 +5,13 @@ from ._messages import CliMsg, DescriptionMsg, ErrorMsg
 from ._parser import Parser
 from .io import output
 
-# import pysnooper
-
 
 _GLOBAL_OPTIONS = {
     "version": "Display this application version",
     "help": "Display this help message",
 }
 
-_GLOBAL_COMMAND_OPTIONS = {"help": "Display this help message"}
+_COMMAND_OPTIONS = {"help": "Display this help message"}
 
 parse = Parser()
 
@@ -33,20 +31,26 @@ class Master(Base):
     Global CLI configuration.
     """
 
-    cover = None  # TODO: print something nice cover
+    cover = None  # TODO: print a nice cover
     app_name = None
     options = None
     version = "0.1.0"
 
     def __init__(self):
+        # command and options passed on the command line
+        self.passed_options = parse.get_options
+        self.passed_command = parse.get_command
+
+        # all the registered commands (from self.register())
         self._commands = {}
-        self.flags = parse.get_flags
-        self.current_command = parse.get_command
+
+        # common options like --help or --version
         self.default_options = parse.parse_options(_GLOBAL_OPTIONS)
 
-        if self.options:
-            self.options = parse.parse_options(self.options)
+        # global option defined by the user (not working yet)
+        self.options = parse.parse_options(self.options)
 
+        # if app_name is None, get the name of the script
         if not self.app_name:
             self.app_name = parse.get_app_name
 
@@ -66,28 +70,28 @@ class Master(Base):
         """
         Execute a registered Command.
         """
-        if self.current_command in self._commands.keys():
-            return self._commands[self.current_command]()
+        if self.passed_command in self._commands.keys():
+            return self._commands[self.passed_command]()
 
-        output(ErrorMsg.wrong_command(self.current_command))
+        output(ErrorMsg.wrong_command(self.passed_command))
 
     def _execute_flag(self):
         """
         Execute a Flag (default or user defined)
         """
-        if "-h" in self.flags or "--help" in self.flags:
+        if "-h" in self.passed_options or "--help" in self.passed_options:
             output(self._main_help())
 
-        elif "-v" in self.flags or "--version" in self.flags:
+        elif "-v" in self.passed_options or "--version" in self.passed_options:
             output(CliMsg.version(self.app_name, self.version))
 
         else:
             # TODO: this shit is hardcoded and will bring doom if I don't fix it.
-            output(ErrorMsg.wrong_option(self.flags[0]))
+            output(ErrorMsg.wrong_option(self.passed_options[0]))
 
     def register(self, *args):
         """
-        Register a command.
+        Register the available commands.
         """
         [self._commands.setdefault(command.command_name, command) for command in args]
 
@@ -95,10 +99,10 @@ class Master(Base):
         """
         Execute the Command Line Interface.
         """
-        if self.current_command:
+        if self.passed_command:
             return self._execute_command()
 
-        elif self.flags:
+        elif self.passed_options:
             return self._execute_flag()
 
         output(self._main_help())
@@ -110,21 +114,21 @@ class Command(Base):
     """
 
     command_name = None  # str: caller of the command
-    argument = None  # dict: {name: help} provided by the user
-    options = None  # dict: {name: help} provided by the user
+    argument = None  # dict: {name: help} user defined
+    options = None  # dict: {name: help} user defined
 
     def __init__(self):
-        self.passed_arguments = parse.get_argument  # Terminal argvs
-        self.options = self._command_options
-        self.flags = parse.get_flags
-        self.default_command_options = parse.parse_options(_GLOBAL_COMMAND_OPTIONS)
+        # arguments and options passed on the command line
+        self.passed_arguments = parse.get_argument
+        self.passed_options = parse.get_options
+
+        # options that are unique to one command
+        self.command_options = parse.parse_options(self.options)
+
+        # options shared by all the commands
+        self.default_options = parse.parse_options(_COMMAND_OPTIONS)
 
         self._run()
-
-    @property
-    def _command_options(self):
-        if self.options:
-            return parse.parse_options(self.options)
 
     def _command_help(self):
         """
@@ -138,10 +142,11 @@ class Command(Base):
             description,
             self.argument,
             self.command_name,
-            self.default_command_options,
-            self.options,
+            self.default_options,
+            self.command_options,
         )
         output(help_msg)
+        sys.exit()
 
     def handler(self):
         """
@@ -154,28 +159,34 @@ class Command(Base):
         Return True/False if the option valid.
         """
         # user defined options are in self.options
-        # current flag is in self.flags
+        # current flag is in self.passed_options
         # option can be:
         # - short, -y (self.options[0].short_flag)
         # - long --yell (self.options[0].long_flag)
-        for opt in self.options:
+        for opt in self.command_options:
             if opt.name == option:
-                if opt.short_flag in self.flags or opt.long_flag in self.flags:
+                if (
+                    opt.short_flag in self.passed_options
+                    or opt.long_flag in self.passed_options
+                ):
                     return True
 
         return False
 
     def check_options(self):
-        if "-h" in self.flags or "--help" in self.flags:
+        # TODO hardcoded for now
+        if "-h" in self.passed_options or "--help" in self.passed_options:
             self._command_help()
-            sys.exit()
 
-        if self.options:
-            for opt in self.options:
-                if opt.short_flag in self.flags or opt.long_flag in self.flags:
-                    return
+        # if the option is found in short or long flag, return to _run()
+        for opt in self.command_options:
+            if opt.short_flag in self.passed_options:
+                return
+            if opt.long_flag in self.passed_options:
+                return
 
-        output(ErrorMsg.wrong_option(self.flags[0]))
+        # else, output an OptionNotFound warning and exit the program
+        output(ErrorMsg.wrong_option(self.passed_options[0]))
         sys.exit()
 
     def _run(self):
@@ -184,22 +195,25 @@ class Command(Base):
         by the user) is override with the argument (sys.argv) to be used on
         the `handler()` method. Else, generate and print the help.
         """
-        # if a flag is passed but no arguments
-        if self.flags and not self.passed_arguments:
+        # check for passed options, if invalid output an OptionNotFound warning
+        if self.passed_options:
             self.check_options()
 
-        # if a flag is passed with an argument
-        elif self.flags and self.passed_arguments:
-            self.check_options()
-
-        # if there are user arguments, and a flag but no user arguments
-        if self.argument and self.flags and not self.passed_arguments:
+        # check if an argument is needed to execute a command, and
+        # if not, and one is passed anyway, output an ArgumentNeeded warning
+        if self.argument and not self.passed_arguments:
             argument_name = [k for k in self.argument.keys()]
             output(ErrorMsg.no_argument(argument_name[0]))
             sys.exit()
 
-        # if there are no passed flags, no passed arguments no user definned arguments
-        if not self.flags and not self.passed_arguments and not self.argument:
+        # if the command don't need arguments, but one is passed anyway
+        # output a TooManyArguments warning
+        if self.passed_arguments and not self.argument:
+            output(ErrorMsg.too_many_arguments(self.command_name))
+            sys.exit()
+
+        # if the command don't need arguments to execute
+        if not self.argument:
             return self.handler()
 
         if self.passed_arguments:
