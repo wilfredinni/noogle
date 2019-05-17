@@ -9,7 +9,7 @@ class Main(noodle.Master):
     Sample CLI app written with Noodle.
     """
 
-    app_name = "Greet App"
+    app_name = "Noodle"
     version = "0.1.2"
 
 
