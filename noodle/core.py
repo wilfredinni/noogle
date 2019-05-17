@@ -21,6 +21,13 @@ class Base:
     Base class for both, Master and Command
     """
 
+    def __init__(self, options, passed_options):
+        # user-defined options
+        self.options = parse.parse_options(self.options)
+
+        # options passed on the command line
+        self.passed_options = parse.get_options
+
     def _get_doc(self):
         if self.__doc__:
             return self.__doc__.strip()
@@ -36,9 +43,9 @@ class Master(Base):
     options = None
     version = "0.1.0"
 
-    def __init__(self):
-        # command and options passed on the command line
-        self.passed_options = parse.get_options
+    def __init__(self, options=None, passed_options=None):
+        # user-defined and passed options
+        super().__init__(options, passed_options)
         self.passed_command = parse.get_command
 
         # all the registered commands (from self.register())
@@ -46,9 +53,6 @@ class Master(Base):
 
         # common options like --help or --version
         self.default_options = parse.parse_options(_GLOBAL_OPTIONS)
-
-        # global option defined by the user (not working yet)
-        self.options = parse.parse_options(self.options)
 
         # if app_name is None, get the name of the script
         if not self.app_name:
@@ -91,7 +95,7 @@ class Master(Base):
 
     def register(self, *args):
         """
-        Register the available commands.
+        Register a group of commands.
         """
         [self._commands.setdefault(command.command_name, command) for command in args]
 
@@ -117,13 +121,12 @@ class Command(Base):
     argument = None  # dict: {name: help} user defined
     options = None  # dict: {name: help} user defined
 
-    def __init__(self):
-        # arguments and options passed on the command line
-        self.passed_arguments = parse.get_argument
-        self.passed_options = parse.get_options
+    def __init__(self, options=None, passed_options=None):
+        # user-defined and passed options
+        super().__init__(options, passed_options)
 
-        # options that are unique to one command
-        self.command_options = parse.parse_options(self.options)
+        # arguments passed on the command line
+        self.passed_arguments = parse.get_argument
 
         # options shared by all the commands
         self.default_options = parse.parse_options(_COMMAND_OPTIONS)
@@ -143,7 +146,7 @@ class Command(Base):
             self.argument,
             self.command_name,
             self.default_options,
-            self.command_options,
+            self.options,
         )
         output(help_msg)
         sys.exit()
@@ -158,17 +161,14 @@ class Command(Base):
         """
         Return True/False if the option valid.
         """
-        # user defined options are in self.options
-        # current flag is in self.passed_options
-        # option can be:
-        # - short, -y (self.options[0].short_flag)
-        # - long --yell (self.options[0].long_flag)
-        for opt in self.command_options:
+        # user-defined options are in self.options and passed option in
+        # self.passed_options. Option can be  short (self.options[0].short_flag)
+        # or long (self.options[0].long_flag)
+        for opt in self.options:
             if opt.name == option:
-                if (
-                    opt.short_flag in self.passed_options
-                    or opt.long_flag in self.passed_options
-                ):
+                if opt.short_flag in self.passed_options:
+                    return True
+                elif opt.long_flag in self.passed_options:
                     return True
 
         return False
@@ -179,11 +179,12 @@ class Command(Base):
             self._command_help()
 
         # if the option is found in short or long flag, return to _run()
-        for opt in self.command_options:
-            if opt.short_flag in self.passed_options:
-                return
-            if opt.long_flag in self.passed_options:
-                return
+        if self.options:
+            for opt in self.options:
+                if opt.short_flag in self.passed_options:
+                    return
+                if opt.long_flag in self.passed_options:
+                    return
 
         # else, output an OptionNotFound warning and exit the program
         output(ErrorMsg.wrong_option(self.passed_options[0]))
@@ -204,13 +205,13 @@ class Command(Base):
         if self.argument and not self.passed_arguments:
             argument_name = [k for k in self.argument.keys()]
             output(ErrorMsg.no_argument(argument_name[0]))
-            sys.exit()
+            return
 
         # if the command don't need arguments, but one is passed anyway
         # output a TooManyArguments warning
         if self.passed_arguments and not self.argument:
             output(ErrorMsg.too_many_arguments(self.command_name))
-            sys.exit()
+            return
 
         # if the command don't need arguments to execute
         if not self.argument:

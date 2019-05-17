@@ -1,25 +1,34 @@
 """
 Very basic example that show how to build the simples CLI.
 """
-from noodle import Master, Command
+import noodle
 
 
-class Main(Master):
+class Main(noodle.Master):
     """
-    Sample CLI app for the Rose framework.
+    Sample CLI app written with Noodle.
     """
 
+    app_name = "Greet App"
+    version = "0.1.2"
 
-class Greet(Command):
+
+class Greet(noodle.Command):
     """
     Greets someone
     """
 
     command_name = "greet"
     argument = {"name": "Who do you want to greet?"}
+    options = {"yell": "Yell in uppercase letters"}
 
     def handler(self):
-        print(f"hello {self.argument}")
+        text = f"hello {self.argument}"
+
+        if self.option("yell"):
+            text = text.upper()
+
+        noodle.output(text)
 
 
 app = Main()

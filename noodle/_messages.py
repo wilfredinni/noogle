@@ -1,7 +1,7 @@
 class ErrorMsg:
     @staticmethod
     def wrong_command(command):
-        return f"CommandNotFound: '{command}' is not registered."
+        return f"CommandNotFound: '{command}' is not a registered Command."
 
     @staticmethod
     def wrong_option(option):

@@ -4,7 +4,8 @@ from noodle._messages import ErrorMsg, CliMsg, DescriptionMsg
 
 
 @pytest.mark.parametrize(
-    "command, output", [("test", "CommandNotFound: 'test' is not registered.")]
+    "command, output",
+    [("test", "CommandNotFound: 'test' is not a registered Command.")],
 )
 def test_wrong_command(command, output):
     msg = ErrorMsg.wrong_command(command)
@@ -26,6 +27,11 @@ def test_wrong_option(option, output):
 def test_no_argument():
     msg = ErrorMsg.no_argument("test")
     assert msg == "ArgumentNeeded: 'test' is a mandatory argument for this command."
+
+
+def test_too_many_arguments():
+    msg = ErrorMsg.too_many_arguments("test")
+    assert msg == f"TooManyArguments: [test -h] for more information."
 
 
 def test_usage():
