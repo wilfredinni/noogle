@@ -2,16 +2,10 @@ import sys
 
 from ._formatter import get_command_help, get_master_help
 from ._messages import CliMsg, DescriptionMsg, ErrorMsg
+from ._globals import _COMMAND_OPTIONS, _GLOBAL_OPTIONS, _HELP_FLAGS, _VERSION_FLAGS
 from ._parser import Parser
 from .io import output
 
-
-_GLOBAL_OPTIONS = {
-    "version": "Display this application version",
-    "help": "Display this help message",
-}
-
-_COMMAND_OPTIONS = {"help": "Display this help message"}
 
 parse = Parser()
 
@@ -83,14 +77,13 @@ class Master(Base):
         """
         Execute a Flag (default or user defined)
         """
-        if "-h" in self.user_passed_options or "--help" in self.user_passed_options:
+        if self.user_passed_options[0] in _HELP_FLAGS:
             output(self._main_help())
 
-        elif "-v" in self.user_passed_options or "--version" in self.user_passed_options:
+        elif self.user_passed_options[0] in _VERSION_FLAGS:
             output(CliMsg.version(self.app_name, self.version))
 
         else:
-            # TODO: this shit is hardcoded and will bring doom if I don't fix it.
             output(ErrorMsg.wrong_option(self.user_passed_options[0]))
 
     def register(self, *args):
@@ -174,8 +167,7 @@ class Command(Base):
         return False
 
     def check_options(self):
-        # TODO hardcoded for now
-        if "-h" in self.user_passed_options or "--help" in self.user_passed_options:
+        if self.user_passed_options[0] in _HELP_FLAGS:
             self._command_help()
 
         # if the option is found in short or long flag, return to _run()

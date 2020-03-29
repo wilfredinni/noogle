@@ -2,8 +2,6 @@ from ._messages import CliMsg, DescriptionMsg
 
 ls = "  "  # left space for printing
 
-# TODO the description (self.__doc__) needs a nice formatting
-
 
 def get_master_help(description, commands, options=None, user_options=None):
     """
