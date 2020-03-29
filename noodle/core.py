@@ -21,12 +21,12 @@ class Base:
     Base class for both, Master and Command
     """
 
-    def __init__(self, options, passed_options):
+    def __init__(self, options, user_passed_options):
         # user-defined options
         self.options = parse.parse_options(self.options)
 
         # options passed on the command line
-        self.passed_options = parse.get_options
+        self.user_passed_options = parse.get_options
 
     def _get_doc(self):
         if self.__doc__:
@@ -43,9 +43,9 @@ class Master(Base):
     options = None
     version = "0.1.0"
 
-    def __init__(self, options=None, passed_options=None):
+    def __init__(self, options=None, user_passed_options=None):
         # user-defined and passed options
-        super().__init__(options, passed_options)
+        super().__init__(options, user_passed_options)
         self.passed_command = parse.get_command
 
         # all the registered commands (from self.register())
@@ -83,15 +83,15 @@ class Master(Base):
         """
         Execute a Flag (default or user defined)
         """
-        if "-h" in self.passed_options or "--help" in self.passed_options:
+        if "-h" in self.user_passed_options or "--help" in self.user_passed_options:
             output(self._main_help())
 
-        elif "-v" in self.passed_options or "--version" in self.passed_options:
+        elif "-v" in self.user_passed_options or "--version" in self.user_passed_options:
             output(CliMsg.version(self.app_name, self.version))
 
         else:
             # TODO: this shit is hardcoded and will bring doom if I don't fix it.
-            output(ErrorMsg.wrong_option(self.passed_options[0]))
+            output(ErrorMsg.wrong_option(self.user_passed_options[0]))
 
     def register(self, *args):
         """
@@ -106,7 +106,7 @@ class Master(Base):
         if self.passed_command:
             return self._execute_command()
 
-        elif self.passed_options:
+        elif self.user_passed_options:
             return self._execute_flag()
 
         output(self._main_help())
@@ -121,9 +121,9 @@ class Command(Base):
     argument = None  # dict: {name: help} user defined
     options = None  # dict: {name: help} user defined
 
-    def __init__(self, options=None, passed_options=None):
+    def __init__(self, options=None, user_passed_options=None):
         # user-defined and passed options
-        super().__init__(options, passed_options)
+        super().__init__(options, user_passed_options)
 
         # arguments passed on the command line
         self.passed_arguments = parse.get_argument
@@ -162,32 +162,32 @@ class Command(Base):
         Return True/False if the option valid.
         """
         # user-defined options are in self.options and passed option in
-        # self.passed_options. Option can be  short (self.options[0].short_flag)
+        # self.user_passed_options. Option can be  short (self.options[0].short_flag)
         # or long (self.options[0].long_flag)
         for opt in self.options:
             if opt.name == option:
-                if opt.short_flag in self.passed_options:
+                if opt.short_flag in self.user_passed_options:
                     return True
-                elif opt.long_flag in self.passed_options:
+                elif opt.long_flag in self.user_passed_options:
                     return True
 
         return False
 
     def check_options(self):
         # TODO hardcoded for now
-        if "-h" in self.passed_options or "--help" in self.passed_options:
+        if "-h" in self.user_passed_options or "--help" in self.user_passed_options:
             self._command_help()
 
         # if the option is found in short or long flag, return to _run()
         if self.options:
             for opt in self.options:
-                if opt.short_flag in self.passed_options:
+                if opt.short_flag in self.user_passed_options:
                     return
-                if opt.long_flag in self.passed_options:
+                if opt.long_flag in self.user_passed_options:
                     return
 
         # else, output an OptionNotFound warning and exit the program
-        output(ErrorMsg.wrong_option(self.passed_options[0]))
+        output(ErrorMsg.wrong_option(self.user_passed_options[0]))
         sys.exit()
 
     def _run(self):
@@ -197,7 +197,7 @@ class Command(Base):
         the `handler()` method. Else, generate and print the help.
         """
         # check for passed options, if invalid output an OptionNotFound warning
-        if self.passed_options:
+        if self.user_passed_options:
             self.check_options()
 
         # check if an argument is needed to execute a command, and
