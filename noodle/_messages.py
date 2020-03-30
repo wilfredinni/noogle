@@ -1,5 +1,5 @@
 import os
-from ._hue import red, info, orange
+from ._hue import red, orange
 
 
 class ErrorMsg:

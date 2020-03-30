@@ -14,6 +14,7 @@ COMMANDS = {
     "bad": (31, "[-] "),
     "good": (32, "[+] "),
     "run": (97, "[~] "),
+
     # Colors
     "green": 32,
     "lgreen": 92,
@@ -35,6 +36,7 @@ COMMANDS = {
     "lpurple": 95,
     "lightpurple": 95,
     "orange": 33,
+
     # Styles
     "bg": ";7",
     "bold": ";1",

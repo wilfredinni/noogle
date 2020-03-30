@@ -13,22 +13,20 @@ def get_master_help(description, commands, options=None, user_options=None):
     Returns a nicely formatted string with the definition, usage,
     commands and options of the CLI.
     """
-    cli_description = f"{description}"
-    cli_description += f"{cyan_title('USAGE')}"
-    cli_description += f"{CliMsg.usage()}"
+    cli_details = f"{description}"
+    cli_details += f"{cyan_title('USAGE')}"
+    cli_details += f"{CliMsg.usage()}"
 
     if options:
-        cli_description += formatted_options(
-            options, f"{cyan_title('OPTIONS')}"
-        )
+        cli_details += formatted_options(options, f"{cyan_title('OPTIONS')}")
 
     if user_options:
-        cli_description += formatted_options(user_options)
+        cli_details += formatted_options(user_options)
 
     if len(commands) > 0:
-        cli_description += f"{formatted_commands(commands)}{os.linesep}"
+        cli_details += f"{formatted_commands(commands)}{os.linesep}"
 
-    return cli_description
+    return cli_details
 
 
 def get_command_help(description, argument, command_name, options, user_options):
@@ -40,8 +38,8 @@ def get_command_help(description, argument, command_name, options, user_options)
     command_description = f"{description}"
     command_description += f"{cyan_title('USAGE')}"
     command_description += f"{usage}"
-
     command_description += formatted_options(options, f"{cyan_title('OPTIONS')}")
+
     if user_options:
         command_description += formatted_options(user_options)
 
@@ -74,11 +72,6 @@ def formatted_commands(commands):
     for name, command in commands.items():
         doc = command.__doc__
         command_help = doc.strip() if doc else DescriptionMsg.no_description()
-        # if command.__doc__:
-        #     command_help = command.__doc__.strip()
-        # else:
-        #     command_help = DescriptionMsg.no_description()
-
         fmt_commands += f"{name.ljust(17)}"
         fmt_commands += f"{command_help}"
 

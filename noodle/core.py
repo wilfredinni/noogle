@@ -1,7 +1,7 @@
 import os
 import sys
 
-from ._formatter import get_command_help, get_master_help
+from ._help_formatter import get_command_help, get_master_help
 from ._messages import CliMsg, DescriptionMsg, ErrorMsg
 from ._globals import _COMMAND_OPTIONS, _GLOBAL_OPTIONS, _HELP_FLAGS, _VERSION_FLAGS
 from ._parser import Parser
