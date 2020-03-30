@@ -20,7 +20,10 @@ class Greet(noodle.Command):
 
     command_name = "greet"
     argument = {"name": "Who do you want to greet?"}
-    options = {"yell": "Yell in uppercase letters"}
+    options = {
+        "yell": "Yell in uppercase letters",
+        "shhhhh": "Yell in uppercase letters"
+        }
 
     def handler(self):
         text = f"hello {self.argument}"

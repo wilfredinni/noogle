@@ -1,3 +1,4 @@
+import os
 import sys
 
 from ._formatter import get_command_help, get_master_help
@@ -24,7 +25,7 @@ class Base:
 
     def _get_doc(self):
         if self.__doc__:
-            return self.__doc__.strip()
+            return f"{self.__doc__.strip()}{os.linesep}"
 
 
 class Master(Base):
@@ -32,7 +33,6 @@ class Master(Base):
     Global CLI configuration.
     """
 
-    cover = None  # TODO: print a nice cover
     app_name = None
     options = None
     version = "0.1.0"

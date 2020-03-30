@@ -1,28 +1,34 @@
-from ._messages import CliMsg, DescriptionMsg
+import os
 
-ls = "  "  # left space for printing
+from ._messages import CliMsg, DescriptionMsg
+from ._hue import cyan, bold
+
+
+def cyan_title(text):
+    return f"{os.linesep}{bold(cyan(text))}{os.linesep}"
 
 
 def get_master_help(description, commands, options=None, user_options=None):
     """
     Returns a nicely formatted string with the definition, usage,
-    commands and options of a CLI.
+    commands and options of the CLI.
     """
-    usage = CliMsg.usage()
-    app_description = f"{description}\n\n"
-    app_description += f"Usage:\n"
-    app_description += f"{ls}{usage}"
+    cli_description = f"{description}"
+    cli_description += f"{cyan_title('USAGE')}"
+    cli_description += f"{CliMsg.usage()}"
 
     if options:
-        app_description += formatted_options(options, "\nOptions")
+        cli_description += formatted_options(
+            options, f"{cyan_title('OPTIONS')}"
+        )
 
     if user_options:
-        app_description += formatted_options(user_options)
+        cli_description += formatted_options(user_options)
 
     if len(commands) > 0:
-        app_description += formatted_commands(commands)
+        cli_description += f"{formatted_commands(commands)}{os.linesep}"
 
-    return app_description
+    return cli_description
 
 
 def get_command_help(description, argument, command_name, options, user_options):
@@ -31,18 +37,16 @@ def get_command_help(description, argument, command_name, options, user_options)
     description and options of a single command.
     """
     usage = CliMsg.usage(command_name)
+    command_description = f"{description}"
+    command_description += f"{cyan_title('USAGE')}"
+    command_description += f"{usage}"
 
-    # command_description = f"Help:\n"
-    # command_description += f"{ls}{description}\n"
-    command_description = f"{description}\n"
-    command_description += f"\nUsage:\n  {usage}\n"
-
-    command_description += formatted_options(options, "Options")
+    command_description += formatted_options(options, f"{cyan_title('OPTIONS')}")
     if user_options:
         command_description += formatted_options(user_options)
 
     if argument:
-        command_description += formatted_arguments(argument)
+        command_description += f"{formatted_arguments(argument)}{os.linesep}"
 
     return command_description
 
@@ -52,16 +56,11 @@ def formatted_options(options, title=None):
     Returns a multiline string with nice formating for the default
     and user defined options. Part of the Master and Command help.
     """
-    fmt_options = ""
-    if title:
-        fmt_options = f"\n{title}:\n"
-
+    fmt_options = f"{os.linesep}{title}" if title else ""
     for option in options:
-        fmt_options += (
-            f"{ls}{option.short_flag}, "
-            f"{option.long_flag.ljust(13)}"
-            f"{option.description}\n"
-        )
+        fmt_options += f"{option.short_flag}, "
+        fmt_options += f"{option.long_flag.ljust(13)}"
+        fmt_options += f"{option.description}{os.linesep}"
 
     return fmt_options
 
@@ -71,14 +70,16 @@ def formatted_commands(commands):
     Returns a multiline string with nice formating for all the
     registered commands.
     """
-    fmt_commands = "\nCommands:"
+    fmt_commands = f"{cyan_title('COMMANDS')}"
     for name, command in commands.items():
-        if command.__doc__:
-            command_help = command.__doc__.strip()
-        else:
-            command_help = DescriptionMsg.no_description()
+        doc = command.__doc__
+        command_help = doc.strip() if doc else DescriptionMsg.no_description()
+        # if command.__doc__:
+        #     command_help = command.__doc__.strip()
+        # else:
+        #     command_help = DescriptionMsg.no_description()
 
-        fmt_commands += f"\n{ls}{name.ljust(16)}"
+        fmt_commands += f"{name.ljust(17)}"
         fmt_commands += f"{command_help}"
 
     return fmt_commands
@@ -89,8 +90,8 @@ def formatted_arguments(argument):
     Returns a multiline string with nice formating for all the
     arguments.
     """
-    fmt_arguments = f"\nArguments:"
+    fmt_arguments = f"{cyan_title('ARGUMENTS')}"
     for name, description in argument.items():
-        fmt_arguments += f"\n{ls}{name.ljust(16)} {description}"
+        fmt_arguments += f"{name.ljust(16)} {description}"
 
     return fmt_arguments
