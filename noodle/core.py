@@ -112,7 +112,7 @@ class Command(Base):
 
     command_name = None  # str: caller of the command
     argument = None  # dict: {name: help} user defined
-    options = None  # dict: {name: help} user defined
+    options = {}  # dict: {name: help} user defined
 
     def __init__(self, options=None, user_passed_options=None):
         # user-defined and passed options
@@ -157,14 +157,16 @@ class Command(Base):
         # user-defined options are in self.options and passed option in
         # self.user_passed_options. Option can be  short (self.options[0].short_flag)
         # or long (self.options[0].long_flag)
-        for opt in self.options:
-            if opt.name == option:
-                if opt.short_flag in self.user_passed_options:
-                    return True
-                elif opt.long_flag in self.user_passed_options:
-                    return True
-
-        return False
+        try:
+            for opt in self.options:
+                if opt.name == option:
+                    if opt.short_flag in self.user_passed_options:
+                        return True
+                    elif opt.long_flag in self.user_passed_options:
+                        return True
+            return False
+        except TypeError:
+            return []
 
     def check_options(self):
         if self.user_passed_options[0] in _HELP_FLAGS:
