@@ -24,7 +24,7 @@ def get_master_help(description, commands, options=None, user_options=None):
         cli_details += formatted_options(user_options)
 
     if len(commands) > 0:
-        cli_details += f"{formatted_commands(commands)}{os.linesep}"
+        cli_details += f"{formatted_commands(commands)}"
 
     return cli_details
 
@@ -57,7 +57,7 @@ def formatted_options(options, title=None):
     fmt_options = f"{os.linesep}{title}" if title else ""
     for option in options:
         fmt_options += f"{option.short_flag}, "
-        fmt_options += f"{option.long_flag.ljust(13)}"
+        fmt_options += f"{option.long_flag.ljust(17)}"
         fmt_options += f"{option.description}{os.linesep}"
 
     return fmt_options
@@ -72,8 +72,8 @@ def formatted_commands(commands):
     for name, command in commands.items():
         doc = command.__doc__
         command_help = doc.strip() if doc else DescriptionMsg.no_description()
-        fmt_commands += f"{name.ljust(17)}"
-        fmt_commands += f"{command_help}"
+        fmt_commands += f"{name.ljust(21)}"
+        fmt_commands += f"{command_help}{os.linesep}"
 
     return fmt_commands
 
@@ -85,6 +85,6 @@ def formatted_arguments(argument):
     """
     fmt_arguments = f"{cyan_title('ARGUMENTS')}"
     for name, description in argument.items():
-        fmt_arguments += f"{name.ljust(16)} {description}"
+        fmt_arguments += f"{name.ljust(20)} {description}"
 
     return fmt_arguments
