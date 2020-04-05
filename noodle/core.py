@@ -16,10 +16,7 @@ class Base:
     Base class for both, Master and Command
     """
 
-    def __init__(self, options, user_passed_options):
-        # user-defined options
-        self.options = parse.parse_options(self.options)
-
+    def __init__(self, user_passed_options):
         # options passed on the command line
         self.user_passed_options = parse.get_options
 
@@ -37,9 +34,9 @@ class Master(Base):
     options = None
     version = "0.1.0"
 
-    def __init__(self, options=None, user_passed_options=None):
-        # user-defined and passed options
-        super().__init__(options, user_passed_options)
+    def __init__(self, user_passed_options=None):
+        # passed options
+        super().__init__(user_passed_options)
         self.passed_command = parse.get_command
 
         # all the registered commands (from self.register())
@@ -114,9 +111,12 @@ class Command(Base):
     argument = None  # dict: {name: help} user defined
     options = {}  # dict: {name: help} user defined
 
-    def __init__(self, options=None, user_passed_options=None):
-        # user-defined and passed options
-        super().__init__(options, user_passed_options)
+    def __init__(self, user_passed_options=None):
+        # passed options
+        super().__init__(user_passed_options)
+
+        # user-defined options
+        self.options = parse.parse_options(self.command_options())
 
         # arguments passed on the command line
         self.passed_arguments = parse.get_argument
@@ -157,16 +157,16 @@ class Command(Base):
         # user-defined options are in self.options and passed option in
         # self.user_passed_options. Option can be  short (self.options[0].short_flag)
         # or long (self.options[0].long_flag)
-        try:
-            for opt in self.options:
-                if opt.name == option:
-                    if opt.short_flag in self.user_passed_options:
-                        return True
-                    elif opt.long_flag in self.user_passed_options:
-                        return True
-            return False
-        except TypeError:
-            return []
+        for opt in self.options:
+            if opt.name == option:
+                if opt.short_flag in self.user_passed_options:
+                    return True
+                elif opt.long_flag in self.user_passed_options:
+                    return True
+        return False
+
+    def command_options(self):
+        return {}
 
     def check_options(self):
         if self.user_passed_options[0] in _HELP_FLAGS:
