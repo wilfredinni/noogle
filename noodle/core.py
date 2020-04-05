@@ -116,7 +116,7 @@ class Command(Base):
         super().__init__(user_passed_options)
 
         # user-defined options
-        self.options = parse.parse_options(self.command_options())
+        self.user_options = parse.parse_options(self.command_options())
 
         # arguments passed on the command line
         self.passed_arguments = parse.get_argument
@@ -139,7 +139,7 @@ class Command(Base):
             self.argument,
             self.command_name,
             self.default_options,
-            self.options,
+            self.user_options,
         )
         output(help_msg)
         sys.exit()
@@ -157,7 +157,7 @@ class Command(Base):
         # user-defined options are in self.options and passed option in
         # self.user_passed_options. Option can be  short (self.options[0].short_flag)
         # or long (self.options[0].long_flag)
-        for opt in self.options:
+        for opt in self.user_options:
             if opt.name == option:
                 if opt.short_flag in self.user_passed_options:
                     return True
@@ -166,15 +166,15 @@ class Command(Base):
         return False
 
     def command_options(self):
-        return {}
+        return self.options
 
     def check_options(self):
         if self.user_passed_options[0] in _HELP_FLAGS:
             self._command_help()
 
         # if the option is found in short or long flag, return to _run()
-        if self.options:
-            for opt in self.options:
+        if self.user_options:
+            for opt in self.user_options:
                 if opt.short_flag in self.user_passed_options:
                     return
                 if opt.long_flag in self.user_passed_options:

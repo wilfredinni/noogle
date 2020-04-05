@@ -1,5 +1,5 @@
 """
-Very basic example that show how to build the simples CLI.
+Very basic example that show how to build a simple CLI.
 """
 import noodle
 
@@ -22,10 +22,9 @@ class Greet(noodle.Command):
     argument = {"name": "Who do you want to greet?"}
 
     def command_options(self):
-        my_options = {}
-        my_options['yell'] = 'Yell in uppercase letters'
-        my_options['shh'] = 'Shh in lowercase letters'
-        return my_options
+        self.options["yell"] = "Yell in uppercase letters"
+        self.options["shh"] = "Shh in lowercase letters"
+        return self.options
 
     def handler(self):
         text = f"hello {self.argument}"
@@ -33,7 +32,7 @@ class Greet(noodle.Command):
         if self.option("yell"):
             text = text.upper()
 
-        if self.option('shh'):
+        if self.option("shh"):
             text = text.lower()
 
         noodle.output(text)
