@@ -3,7 +3,7 @@ _GLOBAL_OPTIONS = {
     "help": "Display this help message",
 }
 
-_COMMAND_OPTIONS = {"help": "Display this help message"}
+_GLOBAL_COMMAND_OPTIONS = {"help": "Display this help message"}
 
 _HELP_FLAGS = ["--help", "-h"]
 

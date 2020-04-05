@@ -3,7 +3,12 @@ import sys
 
 from ._help_formatter import get_command_help, get_master_help
 from ._messages import CliMsg, DescriptionMsg, ErrorMsg
-from ._globals import _COMMAND_OPTIONS, _GLOBAL_OPTIONS, _HELP_FLAGS, _VERSION_FLAGS
+from ._globals import (
+    _GLOBAL_OPTIONS,
+    _GLOBAL_COMMAND_OPTIONS,
+    _HELP_FLAGS,
+    _VERSION_FLAGS,
+)
 from ._parser import Parser
 from .io import output
 
@@ -122,7 +127,7 @@ class Command(Base):
         self.passed_arguments = parse.get_argument
 
         # options shared by all the commands
-        self.default_options = parse.parse_options(_COMMAND_OPTIONS)
+        self.default_options = parse.parse_options(_GLOBAL_COMMAND_OPTIONS)
 
         self._run()
 
@@ -144,35 +149,11 @@ class Command(Base):
         output(help_msg)
         sys.exit()
 
-    def handler(self):
-        """
-        The handler of the command.
-        """
-        raise NotImplementedError()
-
-    def option(self, option):
-        """
-        Return True/False if the option valid.
-        """
-        # user-defined options are in self.options and passed option in
-        # self.user_passed_options. Option can be  short (self.options[0].short_flag)
-        # or long (self.options[0].long_flag)
-        for opt in self.user_options:
-            if opt.name == option:
-                if opt.short_flag in self.user_passed_options:
-                    return True
-                elif opt.long_flag in self.user_passed_options:
-                    return True
-        return False
-
-    def command_options(self):
-        return self.options
-
-    def check_options(self):
+    def _check_options(self):
         if self.user_passed_options[0] in _HELP_FLAGS:
             self._command_help()
 
-        # if the option is found in short or long flag, return to _run()
+        # if the option is found (short or long flag), return to _run()
         if self.user_options:
             for opt in self.user_options:
                 if opt.short_flag in self.user_passed_options:
@@ -184,15 +165,43 @@ class Command(Base):
         output(ErrorMsg.wrong_option(self.user_passed_options[0]))
         sys.exit()
 
+    def option(self, option):
+        """
+        Return True/False if the option valid. To be used with self.handler():
+        """
+        # user-defined options are in self.user_options and passed option in
+        # self.user_passed_options. Option can be short (self.user_options[0].short_flag)
+        # or long (self.user_options[0].long_flag)
+        for opt in self.user_options:
+            if opt.name == option:
+                if opt.short_flag in self.user_passed_options:
+                    return True
+                elif opt.long_flag in self.user_passed_options:
+                    return True
+        return False
+
+    def command_options(self):
+        """
+        Override this function with the command options. I.e:
+        self.options["yell"] = "Yell in uppercase letters"
+        """
+        return self.options
+
+    def handler(self):
+        """
+        The handler of the command.
+        """
+        raise NotImplementedError()
+
     def _run(self):
         """
         If an argument is provided, the dict in `self.argument` (defined
         by the user) is override with the argument (sys.argv) to be used on
         the `handler()` method. Else, generate and print the help.
         """
-        # check for passed options, if invalid output an OptionNotFound warning
+        # check for passed options. If invalid, output an OptionNotFound warning
         if self.user_passed_options:
-            self.check_options()
+            self._check_options()
 
         # check if an argument is needed to execute a command, and
         # if not, and one is passed anyway, output an ArgumentNeeded warning
