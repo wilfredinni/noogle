@@ -24,6 +24,7 @@ class Greet(noodle.Command):
     def command_options(self):
         self.options["yell"] = "Yell in uppercase letters"
         self.options["shh"] = "Shh in lowercase letters"
+        self.options["age"] = "what is your age"
         return self.options
 
     def handler(self):
@@ -32,17 +33,22 @@ class Greet(noodle.Command):
         if self.option("yell") and self.option("shh"):
             text += " Yelled and Shhed"
 
-        elif self.option("yell"):
+        if self.option("yell"):
             text = text.upper()
 
-        elif self.option("shh"):
+        if self.option("shh"):
             text = text.lower()
 
-        noodle.output(text)
+        if self.option("age"):
+            age = noodle.ask.integer("What is your age? ")
+            text += f" , tienes {age}"
+
         noodle.output.info(text)
-        noodle.output.warning(text)
-        noodle.output.danger(text)
-        noodle.output.success(text)
+        # noodle.output(text)
+        # noodle.output.info(text)
+        # noodle.output.warning(text)
+        # noodle.output.danger(text)
+        # noodle.output.success(text)
 
 
 app = Main()

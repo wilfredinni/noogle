@@ -10,7 +10,7 @@ from ._globals import (
     _VERSION_FLAGS,
 )
 from ._parser import Parser
-from .io import output
+from .io import Output as output
 
 
 parse = Parser()

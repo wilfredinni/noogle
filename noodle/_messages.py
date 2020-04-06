@@ -19,6 +19,10 @@ class ErrorMsg:
     def too_many_arguments(command):
         return f"{red('TooManyArguments:')} [{command} -h] for more information."
 
+    @staticmethod
+    def wrong_answer(answer, expected_answer):
+        return f"{red('AnswerTypeError:')} '{answer}' is not of type {expected_answer}"
+
 
 class CliMsg:
     @staticmethod
@@ -37,3 +41,8 @@ class DescriptionMsg:
             return f"Command '{command_name}' has no description yet{os.linesep}"
 
         return f"{orange('No description yet')}{os.linesep}"
+
+
+class CustomError(Exception):
+    """Base class for other exceptions"""
+    pass
