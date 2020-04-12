@@ -1,12 +1,6 @@
-# Noodle
-
-[![Build Status](https://travis-ci.org/wilfredinni/noodle.svg?branch=master)](https://travis-ci.org/wilfredinni/noodle) [![codecov](https://codecov.io/gh/wilfredinni/noodle/branch/master/graph/badge.svg)](https://codecov.io/gh/wilfredinni/noodle) [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/wilfredinni/mary/blob/master/LICENSE)
-
-
-Easily create beautiful and lightweight Command Line tools (WIP)
-
-```python
-# cli.py
+"""
+Very basic example that show how to build a simple CLI.
+"""
 import noodle
 
 
@@ -49,7 +43,3 @@ app.register(Greet)
 
 if __name__ == "__main__":
     app.run()
-
-```
-
-[![asciicast](https://asciinema.org/a/OUvObO8R6wu4Gt9YUyC0CIwE7.svg)](https://asciinema.org/a/OUvObO8R6wu4Gt9YUyC0CIwE7)
