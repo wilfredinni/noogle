@@ -5,8 +5,10 @@
 
 Easily create beautiful and lightweight Command Line tools (WIP)
 
+## Simple Example
+
 ```python
-# cli.py
+# simplest.py
 import noodle
 
 
@@ -15,8 +17,8 @@ class Main(noodle.Master):
     Simple CLI app written with Noodle.
     """
 
-    app_name = "Simplest Cli"
-    version = "0.1.0"
+    app_name = "Simplest"  # if not specified, defaults to the file name
+    version = "0.1.1"  # if not specified, defaults to 0.1.0
 
 
 class Greet(noodle.Command):
