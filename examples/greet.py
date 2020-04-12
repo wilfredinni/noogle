@@ -30,8 +30,8 @@ class Greet(noodle.Command):
     def handler(self):
         text = f"hello {self.argument}"
 
-        if self.option("yell") and self.option("shh"):
-            text += " Yelled and Shhed"
+        if self.option("yell", "shh"):
+            text = f"{self.argument}, you have to decide, Yell or Shh?"
 
         if self.option("yell"):
             text = text.upper()
@@ -41,14 +41,9 @@ class Greet(noodle.Command):
 
         if self.option("age"):
             age = noodle.ask.integer("What is your age? ")
-            text += f" , tienes {age}"
+            text += f" , you are {age} years old"
 
         noodle.output.info(text)
-        # noodle.output(text)
-        # noodle.output.info(text)
-        # noodle.output.warning(text)
-        # noodle.output.danger(text)
-        # noodle.output.success(text)
 
 
 app = Main()

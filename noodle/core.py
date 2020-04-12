@@ -150,6 +150,9 @@ class Command(Base):
         sys.exit()
 
     def _check_options(self):
+        """
+        Check for passed options. If invalid, output an OptionNotFound warning.
+        """
         if self.user_passed_options[0] in _HELP_FLAGS:
             self._command_help()
 
@@ -165,19 +168,22 @@ class Command(Base):
         output(ErrorMsg.wrong_option(self.user_passed_options[0]))
         sys.exit()
 
-    def option(self, option):
+    def option(self, *args):
         """
-        Return True/False if the option valid. To be used with self.handler():
+        Return True/False if an option valid. To be used with self.handler():
         """
         # user-defined options are in self.user_options and passed option in
         # self.user_passed_options. Option can be short or long
         for opt in self.user_options:
-            if opt.name == option:
-                if opt.short_flag in self.user_passed_options:
-                    return True
-                elif opt.long_flag in self.user_passed_options:
-                    return True
-        return False
+            if opt.name in args:
+                if (
+                    opt.short_flag in self.user_passed_options
+                    or opt.long_flag in self.user_passed_options
+                ):
+                    continue
+                else:
+                    return False
+        return True
 
     def command_options(self):
         """
