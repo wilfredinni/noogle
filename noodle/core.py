@@ -170,8 +170,7 @@ class Command(Base):
         Return True/False if the option valid. To be used with self.handler():
         """
         # user-defined options are in self.user_options and passed option in
-        # self.user_passed_options. Option can be short (self.user_options[0].short_flag)
-        # or long (self.user_options[0].long_flag)
+        # self.user_passed_options. Option can be short or long
         for opt in self.user_options:
             if opt.name == option:
                 if opt.short_flag in self.user_passed_options:
