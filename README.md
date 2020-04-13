@@ -17,7 +17,7 @@ class Main(noodle.Master):
     Simple CLI app written with Noodle.
     """
 
-    app_name = "Simplest"  # if not specified, defaults to the file name
+    app_name = "Simplest"  # if not specified, defaults to the filename
     version = "0.1.1"  # if not specified, defaults to 0.1.0
 
 
