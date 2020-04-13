@@ -34,11 +34,19 @@ class Ask:
         return input(text)
 
     @staticmethod
-    def integer(integer):
+    def integer(message):
         try:
-            number = input(integer)
-            int(number)
-            return number
+            number = input(message)
+            return int(number)
         except ValueError:
             print(ErrorMsg.wrong_answer(number, int))
+            sys.exit()
+
+    @staticmethod
+    def float(message):
+        float_n = input(message)
+        try:
+            return float(float_n)
+        except ValueError:
+            print(ErrorMsg.wrong_answer(float_n, float))
             sys.exit()
