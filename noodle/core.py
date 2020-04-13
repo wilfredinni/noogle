@@ -113,7 +113,7 @@ class Command(Base):
     """
 
     command_name = None  # str: caller of the command
-    argument = None  # dict: {name: help} user defined
+    arguments = {}  # dict: {name: help} user defined
     options = {}  # dict: {name: help} user defined
 
     def __init__(self, user_passed_options=None):
@@ -141,7 +141,7 @@ class Command(Base):
 
         help_msg = get_command_help(
             description,
-            self.argument,
+            self.arguments,
             self.command_name,
             self.default_options,
             self.user_options,
@@ -176,11 +176,20 @@ class Command(Base):
         # self.user_passed_options. Option can be short or long
         for opt in self.user_options:
             if opt.name in args:
+                # if the option is called in the command line
                 if (
                     opt.short_flag in self.user_passed_options
                     or opt.long_flag in self.user_passed_options
                 ):
-                    continue
+                    if opt.default:
+                        # TODO get the value from the sys or return the default
+                        return opt.default
+                    else:
+                        return True
+
+                # if the option is not called, first get the default
+                elif opt.default:
+                    return opt.default
                 else:
                     return False
         return True
@@ -200,7 +209,7 @@ class Command(Base):
 
     def _run(self):
         """
-        If an argument is provided, the dict in `self.argument` (defined
+        If an argument is provided, the dict in `self.arguments` (defined
         by the user) is override with the argument (sys.argv) to be used on
         the `handler()` method. Else, generate and print the help.
         """
@@ -210,19 +219,19 @@ class Command(Base):
 
         # check if an argument is needed to execute a command, and
         # if not, and one is passed anyway, output an ArgumentNeeded warning
-        if self.argument and not self.passed_arguments:
-            argument_name = [k for k in self.argument.keys()]
+        if self.arguments and not self.passed_arguments:
+            argument_name = [k for k in self.arguments.keys()]
             output(ErrorMsg.no_argument(argument_name[0]))
             return
 
         # if the command don't need arguments, but one is passed anyway
         # output a TooManyArguments warning
-        if self.passed_arguments and not self.argument:
+        if self.passed_arguments and not self.arguments:
             output(ErrorMsg.too_many_arguments(self.command_name))
             return
 
         # if the command don't need arguments to execute
-        if not self.argument:
+        if not self.arguments:
             return self.handler()
 
         if self.passed_arguments:
@@ -230,7 +239,7 @@ class Command(Base):
             # retrieve the argument, I hardcoded to the first element of
             # the list. This wont work if the user need a a list of arguments.
             # Maybe a method on parse.get_argument (_parser.py).
-            self.argument = self.passed_arguments[0]
+            self.arguments = self.passed_arguments[0]
             return self.handler()
 
         return self._command_help()

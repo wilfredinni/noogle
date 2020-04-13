@@ -4,6 +4,8 @@ from ._messages import CliMsg, DescriptionMsg
 from ._hue import cyan, bold
 
 
+# TODO use classes and contex managers
+
 def cyan_title(text):
     return f"{os.linesep}{bold(cyan(text))}{os.linesep}"
 

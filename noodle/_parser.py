@@ -2,7 +2,9 @@ import sys
 from collections import namedtuple
 
 _argv = namedtuple("argvs", ["name", "commands", "options", "arguments"])
-_options = namedtuple("options", ["name", "long_flag", "short_flag", "description"])
+_options = namedtuple(
+    "options", ["name", "long_flag", "short_flag", "description", "default"]
+)
 
 
 class Parser:
@@ -65,15 +67,15 @@ class Parser:
         """
         if options:
             parsed_options = []
-            for name, description in options.items():
+            for name, help_msg in options.items():
                 name = name
                 long_flag = f"--{name}"
                 short_flag = f"-{name[0]}"
-                description = description
+                description = help_msg["help"] if type(help_msg) is dict else help_msg
+                default = help_msg.get("default") if type(help_msg) is dict else False
                 parsed_options.append(
-                    _options(name, long_flag, short_flag, description)
+                    _options(name, long_flag, short_flag, description, default)
                 )
-
             return parsed_options
 
         return
