@@ -7,7 +7,8 @@
 - Added `TooManyArguments` warning.
 - Added `AnswerTypeError` warning.
 - Add colorized output: `noodle.output`, `noodle.output.info`, `noodle.output.warning`, `noodle.output.danger`, `noodle.output.success`.
-- Add validated questions: `noodle.ask.any`, `noodle.ask.integer`.
+- Add validated questions: `noodle.ask.any`, `noodle.ask.integer`, and `noodle.ask.float`.
+- Add support for default option values.
 
 ### Fixed
 
@@ -16,8 +17,8 @@
 
 ### Changed
 
-- Command options are now defined in the `command_options method`.
+- `self.option()` can now evaluate multiple options (`self.options(opt1, opt2)`).
 
-## [v0.0.2](https://github.com/wilfredinni/noodle/releases/tag/0.0.2) - 2019-05-15
+## [0.0.2](https://github.com/wilfredinni/noodle/releases/tag/0.0.2) - 2019-05-15
 
 Initial release.
