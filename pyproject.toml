@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "noodle"
-version = "0.0.2"
+version = "0.1.0"
 description = "Create beautiful and lightweight Command Lines Tools."
 authors = ["wilfredinni <carlos.w.montecinos@gmail.com>"]
 repository = "https://github.com/wilfredinni/noodle"
